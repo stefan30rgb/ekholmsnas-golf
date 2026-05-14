@@ -1771,8 +1771,8 @@ function defaultState() {
     view: "setup",           // "setup" | "hole" | "overview" | "finished" | "history" | "history-detail"
     players: [],             // {id, name, hcp, gender, tee, isJunior, scores:[{value,dnf,entered}]}
     currentHole: 0,
-    theme: "auto",           // "auto" | "light" | "dark"
-    setupSelected: [...DEFAULT_PLAYERS],
+    theme: "dark",           // "auto" | "light" | "dark"
+    setupSelected: [],
     history: [],             // saved rounds, newest first
     viewingHistoryId: null,
     playerProfiles: {},      // { [name]: {hcp, gender, tee, isJunior} } — persistent per name
