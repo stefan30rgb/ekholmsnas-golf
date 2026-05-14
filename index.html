@@ -1886,14 +1886,7 @@ const ui = { menuOpen: false, installModalOpen: false, endRoundModalOpen: false,
 
 function abortRound() {
   ui.endRoundModalOpen = false;
-  const keepTheme = state.theme;
-  const keepHistory = state.history || [];
-  const keepProfiles = state.playerProfiles || {};
-  state = defaultState();
-  state.theme = keepTheme;
-  state.history = keepHistory;
-  state.playerProfiles = keepProfiles;
-  saveState();
+  resetRound("setup");
   render();
 }
 
@@ -2293,9 +2286,11 @@ function saveRoundToHistory() {
 function resetRound(toView) {
   const keepTheme = state.theme;
   const keepHistory = state.history || [];
+  const keepProfiles = state.playerProfiles || {};
   state = defaultState();
   state.theme = keepTheme;
   state.history = keepHistory;
+  state.playerProfiles = keepProfiles;
   state.view = toView || "setup";
   saveState();
 }
