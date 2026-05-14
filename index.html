@@ -1780,7 +1780,20 @@ function defaultState() {
 }
 
 // Transient UI state (not persisted)
-const ui = { menuOpen: false, installModalOpen: false, wrapped: null };
+const ui = { menuOpen: false, installModalOpen: false, endRoundModalOpen: false, wrapped: null };
+
+function abortRound() {
+  ui.endRoundModalOpen = false;
+  const keepTheme = state.theme;
+  const keepHistory = state.history || [];
+  const keepProfiles = state.playerProfiles || {};
+  state = defaultState();
+  state.theme = keepTheme;
+  state.history = keepHistory;
+  state.playerProfiles = keepProfiles;
+  saveState();
+  render();
+}
 
 const WRAPPED_SLIDE_MS = 5000;
 
@@ -2471,6 +2484,47 @@ function render() {
 
   renderDrawer();
   renderInstallModal();
+  renderEndRoundModal();
+}
+
+function renderEndRoundModal() {
+  const existing = document.getElementById("end-round-modal-root");
+  if (existing) existing.remove();
+  if (!ui.endRoundModalOpen) return;
+
+  const root = el("div", "modal-overlay");
+  root.id = "end-round-modal-root";
+  root.onclick = () => { ui.endRoundModalOpen = false; render(); };
+
+  const modal = el("div", "modal");
+  modal.onclick = e => e.stopPropagation();
+  modal.appendChild(el("h3", "", "Avsluta rundan"));
+  modal.appendChild(Object.assign(el("p", "modal-sub"), {
+    textContent: roundHasScores()
+      ? "Vill du spara rundan i historiken eller avbryta utan att spara?"
+      : "Inga score är registrerade än. Vill du ändå spara eller avbryta?",
+  }));
+
+  const save = el("button", "primary-btn", "Spara rundan");
+  save.style.marginTop = "6px";
+  save.onclick = () => {
+    ui.endRoundModalOpen = false;
+    endRoundAndSave();
+  };
+  modal.appendChild(save);
+
+  const abort = el("button", "secondary-btn", "Avbryt rundan");
+  abort.style.color = "var(--danger)";
+  abort.style.borderColor = "var(--danger)";
+  abort.onclick = abortRound;
+  modal.appendChild(abort);
+
+  const cancel = el("button", "text-link", "Tillbaka till rundan");
+  cancel.onclick = () => { ui.endRoundModalOpen = false; render(); };
+  modal.appendChild(cancel);
+
+  root.appendChild(modal);
+  document.body.appendChild(root);
 }
 
 // ----- Slide list builder -----
@@ -2857,28 +2911,17 @@ function renderDrawer() {
   if (state.players.length > 0) {
     inner.appendChild(el("div", "drawer-section", "Aktuell runda"));
 
-    if (roundHasScores()) {
-      const finishItem = el("button", "drawer-item");
-      finishItem.append(
-        iconSpan(svgCheck()),
-        el("span", "label", "Avsluta runda")
-      );
-      finishItem.onclick = () => {
-        ui.menuOpen = false;
-        state.view = "finished";
-        saveState();
-        render();
-      };
-      inner.appendChild(finishItem);
-    }
-
-    const discardItem = el("button", "drawer-item danger");
-    discardItem.append(
-      iconSpan(svgTrash()),
-      el("span", "label", "Släng rundan")
+    const endItem = el("button", "drawer-item");
+    endItem.append(
+      iconSpan(svgCheck()),
+      el("span", "label", "Avsluta rundan")
     );
-    discardItem.onclick = () => { ui.menuOpen = false; discardRound(); };
-    inner.appendChild(discardItem);
+    endItem.onclick = () => {
+      ui.menuOpen = false;
+      ui.endRoundModalOpen = true;
+      render();
+    };
+    inner.appendChild(endItem);
   }
 }
 
@@ -3770,6 +3813,7 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (e.key !== "Escape") return;
+  if (ui.endRoundModalOpen) { ui.endRoundModalOpen = false; render(); return; }
   if (ui.installModalOpen) { ui.installModalOpen = false; render(); return; }
   if (ui.menuOpen) toggleMenu(false);
 });
