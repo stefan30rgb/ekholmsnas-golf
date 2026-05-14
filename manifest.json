@@ -1,0 +1,15 @@
+{
+  "name": "Ekholmsnäs Golf",
+  "short_name": "Ekholmsnäs",
+  "description": "Scorekort för Ekholmsnäs Golf — 9 hål med HCP, historik och delning",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fafaf7",
+  "theme_color": "#2d7a4a",
+  "lang": "sv-SE",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

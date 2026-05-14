@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2d7a4a">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ekholmsnäs">
+<title>Ekholmsnäs Golf</title>
+<style>
+:root {
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --surface-2: #f0eee8;
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --accent: #2d7a4a;
+  --accent-soft: rgba(45, 122, 74, 0.12);
+  --border: #e0ddd5;
+  --danger: #c64545;
+  --shadow: 0 2px 10px rgba(0,0,0,0.05);
+  --radius: 8px;
+  --radius-sm: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121412;
+    --surface: #1c1f1c;
+    --surface-2: #262a26;
+    --text: #f0efe8;
+    --text-muted: #9a9a92;
+    --accent: #4a9b6c;
+    --accent-soft: rgba(74, 155, 108, 0.18);
+    --border: #2e322e;
+    --danger: #d96666;
+    --shadow: 0 2px 10px rgba(0,0,0,0.3);
+  }
+}
+[data-theme="light"] {
+  --bg: #fafaf7;
+  --surface: #ffffff;
+  --surface-2: #f0eee8;
+  --text: #1a1a1a;
+  --text-muted: #6b6b6b;
+  --accent: #2d7a4a;
+  --accent-soft: rgba(45, 122, 74, 0.12);
+  --border: #e0ddd5;
+  --danger: #c64545;
+  --shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+[data-theme="dark"] {
+  --bg: #121412;
+  --surface: #1c1f1c;
+  --surface-2: #262a26;
+  --text: #f0efe8;
+  --text-muted: #9a9a92;
+  --accent: #4a9b6c;
+  --accent-soft: rgba(74, 155, 108, 0.18);
+  --border: #2e322e;
+  --danger: #d96666;
+  --shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+  min-height: 100vh;
+  overscroll-behavior: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  transition: background 0.15s ease, transform 0.05s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+button:active:not(:disabled) { transform: scale(0.96); }
+button:disabled { cursor: not-allowed; }
+
+.app {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 16px;
+  padding-bottom: 48px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  padding: 4px 0;
+}
+.header h1 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.header h1 .muted { color: var(--text-muted); font-weight: 400; }
+
+/* ---------- Weather card ---------- */
+.weather-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.weather-main {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.weather-temp {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.weather-cond {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.weather-feels {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.weather-wind {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.wind-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  transition: transform 0.5s ease;
+}
+.wind-arrow svg { display: block; }
+.wind-info { text-align: left; }
+.wind-speed {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.wind-speed .unit {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 2px;
+}
+.wind-dir {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.weather-meta {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.weather-meta .refresh-link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.weather-state {
+  grid-column: 1 / -1;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 4px 0;
+}
+.weather-state.error { color: var(--danger); }
+.weather-retry {
+  grid-column: 1 / -1;
+  padding: 8px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-top: 4px;
+  justify-self: center;
+}
+.theme-toggle, .menu-btn {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid var(--border);
+  flex: 0 0 44px;
+  padding: 0;
+  color: var(--text);
+}
+.menu-btn svg { display: block; }
+
+/* ---------- Drawer ---------- */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 50;
+}
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 86%;
+  max-width: 380px;
+  background: var(--bg);
+  transform: translateX(-105%);
+  transition: transform 0.25s ease;
+  z-index: 51;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px 16px 32px;
+  box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+  -webkit-overflow-scrolling: touch;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.drawer-title {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.drawer-close {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 26px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  padding: 0;
+}
+.drawer-section {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin: 22px 4px 10px;
+}
+.drawer-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 18px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: left;
+  gap: 14px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+.drawer-item .icon {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex: 0 0 28px;
+}
+.drawer-item .label { flex: 1; }
+.drawer-item .meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+.drawer-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.drawer-item.danger { color: var(--danger); }
+.drawer-item.danger .icon { color: var(--danger); }
+
+/* ---------- History view ---------- */
+.history h2 { font-size: 28px; margin: 0 0 16px; letter-spacing: -0.02em; font-weight: 700; }
+.history .lede { color: var(--text-muted); margin: 0 0 16px; font-size: 16px; }
+.history-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+.history-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+.history-card .date {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.history-card .players {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.history-card .player-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 17px;
+}
+.history-card .player-line .name { font-weight: 500; }
+.history-card .player-line .score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.history-card .player-line .score .vs {
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 6px;
+  color: var(--text-muted);
+}
+.history-card .player-line .score .vs.over { color: var(--danger); }
+.history-card .player-line .score .vs.under { color: var(--accent); }
+.history-card .player-line .score .dnf {
+  font-size: 12px;
+  color: var(--danger);
+  margin-left: 6px;
+  font-weight: 500;
+}
+.history-card .actions {
+  display: flex;
+  gap: 8px;
+}
+.history-card .actions button {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.history-card .actions .delete-btn {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+.history-card .actions .delete-btn svg { stroke: var(--danger); }
+
+/* ---------- Finished / success view ---------- */
+.finished-hero {
+  text-align: center;
+  padding: 8px 0 22px;
+}
+.finished-hero .check-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.finished-hero h2 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0 0 4px;
+}
+.finished-hero .sub {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.section-title {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin: 22px 4px 10px;
+}
+
+.ranking {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.ranking-row {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 14px;
+}
+.ranking-row:last-child { border-bottom: none; }
+.ranking-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex: 0 0 32px;
+}
+.ranking-row.gold .ranking-rank { background: #d4af37; color: #fff; }
+.ranking-row.silver .ranking-rank { background: #a8a8a8; color: #fff; }
+.ranking-row.bronze .ranking-rank { background: #cd7f32; color: #fff; }
+.ranking-name { flex: 1; font-size: 18px; font-weight: 600; }
+.ranking-score { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ranking-score .vs {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-left: 6px;
+  font-weight: 500;
+}
+.ranking-score .vs.over { color: var(--danger); }
+.ranking-score .vs.under { color: var(--accent); }
+.ranking-score .dnf-tag {
+  display: inline-block;
+  font-size: 11px;
+  background: var(--danger);
+  color: white;
+  padding: 1px 7px;
+  border-radius: 999px;
+  margin-left: 8px;
+  font-weight: 600;
+  vertical-align: 2px;
+}
+
+.player-detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+  margin-bottom: 12px;
+}
+.player-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+.player-detail-head .name { font-size: 19px; font-weight: 700; }
+.player-detail-head .total {
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.player-detail-head .total .vs {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 6px;
+}
+.player-detail-head .total .vs.over { color: var(--danger); }
+.player-detail-head .total .vs.under { color: var(--accent); }
+.holes-strip {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+  margin-bottom: 14px;
+}
+.hole-cell {
+  border-radius: 6px;
+  padding: 9px 0 6px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: var(--surface-2);
+  color: var(--text);
+  line-height: 1;
+}
+.hole-cell .h-label {
+  display: block;
+  font-size: 9px;
+  opacity: 0.6;
+  margin-top: 4px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.hole-cell.birdie { background: var(--accent); color: #fff; }
+.hole-cell.bogey { background: #d99536; color: #fff; }
+.hole-cell.double { background: var(--danger); color: #fff; }
+.hole-cell.dnf { background: var(--danger); color: #fff; }
+.hole-cell.empty {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--text-muted);
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.stat-pill {
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  text-align: center;
+}
+.stat-pill .num {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  display: block;
+  line-height: 1;
+}
+.stat-pill .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  display: block;
+  margin-top: 4px;
+}
+.player-extras {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.player-extras strong { color: var(--text); font-weight: 600; }
+
+.share-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 17px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text);
+  margin-top: 12px;
+  box-shadow: var(--shadow);
+}
+.share-btn svg { display: block; }
+.text-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  padding: 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.text-link.danger { color: var(--danger); }
+
+/* ---------- Player HCP form (setup) ---------- */
+.player-setup {
+  margin-bottom: 12px;
+}
+.player-setup .player-chip { margin-bottom: 0; }
+.player-setup.expanded .player-chip {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
+}
+.player-form {
+  background: var(--surface);
+  border: 2px solid var(--accent);
+  border-top: none;
+  border-bottom-left-radius: var(--radius);
+  border-bottom-right-radius: var(--radius);
+  padding: 14px 16px 16px;
+  box-shadow: var(--shadow);
+}
+.form-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  margin-bottom: 10px;
+}
+.form-row:last-child { margin-bottom: 0; }
+.form-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.form-field .field-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.segmented {
+  display: flex;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+.segmented button {
+  flex: 1;
+  padding: 9px 4px;
+  border-radius: 5px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.segmented button.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.junior-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 0;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+}
+.junior-row .checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 22px;
+  background: var(--bg);
+}
+.junior-row.checked .checkbox {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.junior-row .label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+.junior-row button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  padding: 0;
+}
+.spelhcp-info {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+.spelhcp-info .label { color: var(--text-muted); font-weight: 500; }
+
+/* ---------- HCP info in player rows / overview ---------- */
+.player-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hcp-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  vertical-align: 2px;
+}
+.junior-tag {
+  display: inline-flex;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.vs-hcp-line {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.vs-hcp-line .vs-hcp {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.vs-hcp.under { color: var(--accent); }
+.vs-hcp.over { color: var(--danger); }
+.vs-hcp.even { color: var(--text); }
+
+/* ---------- Hantera spelare (players view) ---------- */
+.players-view h2 {
+  font-size: 28px;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.players-view .lede {
+  color: var(--text-muted);
+  margin: 0 0 20px;
+  font-size: 15px;
+}
+.player-mgmt-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.player-mgmt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+.player-mgmt-name {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.delete-player {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.delete-player svg { stroke: var(--danger); width: 14px; height: 14px; }
+.player-mgmt-card .player-form {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+.setup-manage-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  border: none;
+  padding: 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.history-clear {
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: var(--radius);
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--danger);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ---------- Setup view ---------- */
+.setup h2 {
+  font-size: 30px;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.setup .lede {
+  color: var(--text-muted);
+  margin: 0 0 24px;
+}
+.player-chip {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 22px 24px;
+  margin-bottom: 12px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 22px;
+  font-weight: 500;
+  text-align: left;
+  box-shadow: var(--shadow);
+}
+.player-chip .name {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.player-chip .chip-sub {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.player-chip.selected .chip-sub { color: rgba(255, 255, 255, 0.85); }
+.player-chip.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.player-chip .check {
+  font-size: 24px;
+  opacity: 0;
+  margin-left: 12px;
+}
+.player-chip.selected .check { opacity: 1; }
+
+.add-row {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+.add-row input {
+  flex: 1;
+  padding: 18px 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 18px;
+  font-family: inherit;
+  min-width: 0;
+}
+.add-row input::placeholder { color: var(--text-muted); }
+.add-row input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.add-row .add-btn {
+  flex: 0 0 64px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 24px;
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 20px;
+  box-shadow: var(--shadow);
+}
+.primary-btn:disabled { opacity: 0.4; }
+.secondary-btn {
+  width: 100%;
+  padding: 20px;
+  background: var(--surface);
+  color: var(--text);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 10px;
+}
+
+/* ---------- Hole view ---------- */
+.hole-header {
+  text-align: center;
+  margin-bottom: 24px;
+  padding: 8px 0;
+}
+.hole-label {
+  color: var(--text-muted);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.hole-number {
+  font-size: 88px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  margin: 4px 0 4px;
+}
+.hole-par {
+  color: var(--text-muted);
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.player-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px 16px;
+  margin-bottom: 14px;
+  box-shadow: var(--shadow);
+}
+.player-row.dnf .score-display { color: var(--danger); }
+
+.player-row-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 14px;
+  gap: 2px;
+}
+.player-name {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.player-total {
+  font-size: 14px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.player-total .vs-par { color: var(--accent); font-weight: 600; margin-left: 4px; }
+.player-total .vs-par.over { color: var(--danger); }
+
+.score-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.score-btn {
+  width: 76px; height: 76px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-size: 36px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  line-height: 1;
+}
+.score-btn:active:not(:disabled) {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+.score-display {
+  flex: 1;
+  text-align: center;
+  font-size: 68px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+.score-display.unentered { opacity: 0.35; }
+
+.score-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 8px;
+  min-height: 16px;
+}
+.score-meta .badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-weight: 600;
+}
+.score-meta .badge.under { color: var(--accent); }
+.score-meta .badge.over { color: var(--danger); }
+
+.dnf-toggle {
+  margin-top: 14px;
+  width: 100%;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+.dnf-toggle.active {
+  background: var(--danger);
+  color: white;
+  border-color: var(--danger);
+}
+
+.add-mid {
+  margin: 20px 0 8px;
+}
+.add-mid summary {
+  list-style: none;
+  cursor: pointer;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+}
+.add-mid summary::-webkit-details-marker { display: none; }
+.add-mid[open] summary { color: var(--text); }
+
+.nav-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.nav-btn {
+  padding: 22px 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 20px;
+  font-weight: 600;
+  flex: 1;
+}
+.nav-btn.arrow { flex: 0 0 76px; }
+.nav-btn:disabled { opacity: 0.3; }
+.nav-btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.toolbar button {
+  flex: 1;
+  padding: 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* ---------- Overview ---------- */
+.overview h2 {
+  font-size: 28px;
+  margin: 0 0 16px;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+.overview-wrap {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+.overview-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.overview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  min-width: 480px;
+}
+.overview-table th, .overview-table td {
+  padding: 12px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  font-variant-numeric: tabular-nums;
+}
+.overview-table th {
+  background: var(--surface-2);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+.overview-table tr:last-child td { border-bottom: none; }
+.overview-table .name-cell {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+  padding-left: 16px;
+  min-width: 90px;
+}
+.overview-table .total-cell {
+  font-weight: 700;
+  background: var(--surface-2);
+  padding-right: 16px;
+}
+.overview-table .par-row td {
+  color: var(--text-muted);
+  font-size: 14px;
+  background: var(--surface-2);
+  font-weight: 500;
+}
+.overview-table .dnf-cell { color: var(--danger); font-weight: 600; }
+.overview-table .empty-cell { color: var(--text-muted); opacity: 0.5; }
+.overview-table .current-col { background: var(--accent-soft); }
+.overview-table .par-row .current-col { background: var(--accent-soft); }
+
+.overview-tot-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="drawer-backdrop" id="drawer-backdrop"></div>
+<aside class="drawer" id="drawer" aria-label="Meny" role="dialog" aria-hidden="true">
+  <div id="drawer-inner"></div>
+</aside>
+<script>
+"use strict";
+
+const PARS = [3, 3, 4, 4, 3, 3, 3, 3, 3];
+const COURSE_NAME = "Ekholmsnäs";
+const DEFAULT_PLAYERS = ["Oskar", "Stefan", "Philip", "Thea"];
+const STORAGE_KEY = "ekholmsnas-golf-v1";
+
+// Slope-tabell från Ekholmsnäs (preliminär värdering 2024, par 18 = 58)
+const COURSE_PAR_18 = 58;
+const SLOPE = {
+  herr: {
+    1: { cr: 56.4, sr: 87 },
+    2: { cr: 55.4, sr: 84 },
+  },
+  dam: {
+    1: { cr: 58.4, sr: 97 },
+    2: { cr: 57.8, sr: 93 },
+  },
+};
+
+// Default-profiler för de inbyggda spelarna
+const DEFAULT_PROFILES = {
+  "Oskar":  { hcp: null, gender: "herr", tee: 1, isJunior: false },
+  "Stefan": { hcp: null, gender: "herr", tee: 1, isJunior: false },
+  "Philip": { hcp: null, gender: "herr", tee: 1, isJunior: false },
+  "Thea":   { hcp: null, gender: "dam",  tee: 1, isJunior: false },
+};
+
+function blankProfile() { return { hcp: null, gender: "herr", tee: 1, isJunior: false }; }
+
+function getPlayerProfile(name) {
+  const profiles = state.playerProfiles || {};
+  if (profiles[name]) return Object.assign(blankProfile(), profiles[name]);
+  if (DEFAULT_PROFILES[name]) return Object.assign(blankProfile(), DEFAULT_PROFILES[name]);
+  return blankProfile();
+}
+function updatePlayerProfile(name, partial) {
+  state.playerProfiles = state.playerProfiles || {};
+  state.playerProfiles[name] = Object.assign(getPlayerProfile(name), partial);
+  saveState();
+}
+
+function parseHcp(str) {
+  if (str == null) return null;
+  let s = String(str).trim().replace(",", ".");
+  if (!s) return null;
+  let plus = false;
+  if (s.startsWith("+")) { plus = true; s = s.slice(1); }
+  const n = parseFloat(s);
+  if (isNaN(n)) return null;
+  const v = plus ? -Math.abs(n) : n;
+  if (v < -10 || v > 54) return null;
+  return Math.round(v * 10) / 10;
+}
+function formatHcp(v) {
+  if (v == null) return "";
+  if (v < 0) return "+" + Math.abs(v).toFixed(1).replace(".", ",");
+  return v.toFixed(1).replace(".", ",");
+}
+
+function courseHcp18(idx, gender, tee) {
+  if (idx == null) return null;
+  const g = SLOPE[gender] ? gender : "herr";
+  const t = SLOPE[g][tee] ? tee : 1;
+  const slope = SLOPE[g][t];
+  return Math.round(idx * slope.sr / 113 + (slope.cr - COURSE_PAR_18));
+}
+function playingHcp9(idx, gender, tee) {
+  const ch = courseHcp18(idx, gender, tee);
+  if (ch == null) return null;
+  // 9-håls spelhcp = halva 18-håls, avrundat
+  return Math.round(ch / 2);
+}
+
+// vs HCP — bara meningsfullt när alla 9 är klara utan DNF
+function vsHcpResult(player) {
+  if (player.hcp == null) return { status: "no-hcp" };
+  for (let i = 0; i < 9; i++) {
+    if (player.scores[i].dnf) return { status: "dnf" };
+    if (!player.scores[i].entered) return { status: "incomplete" };
+  }
+  const ph9 = playingHcp9(player.hcp, player.gender || "herr", player.tee || 1);
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += player.scores[i].value;
+  return { status: "ok", playingHcp: ph9, net: sum - ph9, vsHcp: sum - totalPar() - ph9 };
+}
+
+// Plus Code 956Q+H6 Lidingö → Ekholmsnäs Golf, södra Lidingö
+const COORDS = { lat: 59.348, lon: 18.167 };
+const WEATHER_KEY = "ekholmsnas-weather-v1";
+const WEATHER_STALE_MS = 15 * 60 * 1000;
+
+function defaultState() {
+  return {
+    view: "setup",           // "setup" | "hole" | "overview" | "finished" | "history" | "history-detail"
+    players: [],             // {id, name, hcp, gender, tee, isJunior, scores:[{value,dnf,entered}]}
+    currentHole: 0,
+    theme: "auto",           // "auto" | "light" | "dark"
+    setupSelected: [...DEFAULT_PLAYERS],
+    history: [],             // saved rounds, newest first
+    viewingHistoryId: null,
+    playerProfiles: {},      // { [name]: {hcp, gender, tee, isJunior} } — persistent per name
+  };
+}
+
+// Transient UI state (not persisted)
+const ui = { menuOpen: false };
+
+let state = loadState();
+let weather = loadWeather();
+
+function loadWeather() {
+  try {
+    const raw = localStorage.getItem(WEATHER_KEY);
+    const base = { loading: false, error: null, data: null, fetchedAt: 0 };
+    if (!raw) return base;
+    return Object.assign(base, JSON.parse(raw));
+  } catch (e) {
+    return { loading: false, error: null, data: null, fetchedAt: 0 };
+  }
+}
+function saveWeather() {
+  try {
+    localStorage.setItem(WEATHER_KEY, JSON.stringify({
+      data: weather.data,
+      fetchedAt: weather.fetchedAt,
+    }));
+  } catch (e) {}
+}
+
+async function fetchWeather(force) {
+  if (!force && weather.fetchedAt && (Date.now() - weather.fetchedAt) < WEATHER_STALE_MS) return;
+  if (weather.loading) return;
+  weather.loading = true;
+  weather.error = null;
+  render();
+  try {
+    const params = [
+      "latitude=" + COORDS.lat,
+      "longitude=" + COORDS.lon,
+      "current=temperature_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,precipitation,relative_humidity_2m",
+      "wind_speed_unit=ms",
+      "timezone=auto",
+    ].join("&");
+    const res = await fetch("https://api.open-meteo.com/v1/forecast?" + params);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const json = await res.json();
+    if (!json.current) throw new Error("Saknar current");
+    weather.data = json.current;
+    weather.fetchedAt = Date.now();
+    weather.error = null;
+    saveWeather();
+  } catch (e) {
+    weather.error = (e && e.message) || "Nätverksfel";
+  }
+  weather.loading = false;
+  render();
+}
+
+function weatherDesc(code) {
+  if (code === 0) return "Klart";
+  if (code === 1) return "Mestadels klart";
+  if (code === 2) return "Halvklart";
+  if (code === 3) return "Mulet";
+  if (code === 45 || code === 48) return "Dimma";
+  if (code >= 51 && code <= 57) return "Duggregn";
+  if (code === 61 || code === 80) return "Lätt regn";
+  if (code === 63 || code === 81) return "Regn";
+  if (code === 65 || code === 82) return "Kraftigt regn";
+  if (code === 66 || code === 67) return "Underkylt regn";
+  if (code >= 71 && code <= 77) return "Snö";
+  if (code === 85 || code === 86) return "Snöbyar";
+  if (code === 95) return "Åska";
+  if (code === 96 || code === 99) return "Åska med hagel";
+  return "—";
+}
+function windDir(deg) {
+  const dirs = ["N","NO","O","SO","S","SV","V","NV"];
+  return dirs[Math.round(((deg % 360) / 45)) % 8];
+}
+function timeHHMM(ts) {
+  const t = new Date(ts);
+  return String(t.getHours()).padStart(2,"0") + ":" + String(t.getMinutes()).padStart(2,"0");
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaultState();
+    const parsed = JSON.parse(raw);
+    return Object.assign(defaultState(), parsed);
+  } catch (e) {
+    return defaultState();
+  }
+}
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+
+function makePlayer(name) {
+  const profile = getPlayerProfile(name);
+  return {
+    id: "p_" + Math.random().toString(36).slice(2, 9),
+    name: name,
+    hcp: profile.hcp,
+    gender: profile.gender,
+    tee: profile.tee,
+    isJunior: profile.isJunior,
+    scores: PARS.map(p => ({ value: p, dnf: false, entered: false })),
+  };
+}
+
+function startRound() {
+  if (state.setupSelected.length === 0) return;
+  state.players = state.setupSelected.map(makePlayer);
+  state.currentHole = 0;
+  state.view = "hole";
+  saveState();
+  render();
+}
+
+function roundHasScores() {
+  return state.players.some(p => p.scores.some(s => s.entered));
+}
+function saveRoundToHistory() {
+  if (!state.players.length || !roundHasScores()) return false;
+  state.history = state.history || [];
+  state.history.unshift({
+    id: "r_" + Date.now(),
+    savedAt: Date.now(),
+    players: JSON.parse(JSON.stringify(state.players)),
+    finalHole: state.currentHole,
+  });
+  return true;
+}
+function resetRound(toView) {
+  const keepTheme = state.theme;
+  const keepHistory = state.history || [];
+  state = defaultState();
+  state.theme = keepTheme;
+  state.history = keepHistory;
+  state.view = toView || "setup";
+  saveState();
+}
+function endRoundAndSave() {
+  saveRoundToHistory();
+  resetRound("setup");
+  render();
+}
+function discardRound() {
+  if (!confirm("Släng rundan utan att spara?")) return;
+  resetRound("setup");
+  render();
+}
+function newRound() {
+  if (roundHasScores()) {
+    const choice = confirm("Spara rundan i historiken?\n\nOK = Spara · Avbryt = Släng");
+    if (choice) saveRoundToHistory();
+  }
+  resetRound("setup");
+  render();
+}
+function deleteHistoryEntry(id) {
+  if (!confirm("Radera denna runda från historiken?")) return;
+  state.history = (state.history || []).filter(r => r.id !== id);
+  if (state.viewingHistoryId === id) {
+    state.viewingHistoryId = null;
+    state.view = "history";
+  }
+  saveState();
+  render();
+}
+function clearAllHistory() {
+  const n = (state.history || []).length;
+  if (n === 0) return;
+  if (!confirm("Radera alla " + n + (n === 1 ? " runda" : " rundor") + " ur historiken?")) return;
+  state.history = [];
+  state.viewingHistoryId = null;
+  if (state.view === "history-detail") state.view = "history";
+  saveState();
+  render();
+}
+
+/* ---------- Menu / navigation ---------- */
+function toggleMenu(open) {
+  ui.menuOpen = (open != null) ? !!open : !ui.menuOpen;
+  render();
+}
+function goHome() {
+  ui.menuOpen = false;
+  state.viewingHistoryId = null;
+  state.view = state.players.length > 0 ? "hole" : "setup";
+  saveState();
+  render();
+}
+function goHistory() {
+  ui.menuOpen = false;
+  state.viewingHistoryId = null;
+  state.view = "history";
+  saveState();
+  render();
+}
+function viewHistoryRound(id) {
+  state.viewingHistoryId = id;
+  state.view = "history-detail";
+  saveState();
+  render();
+}
+
+function commitHole(holeIdx) {
+  state.players.forEach(p => {
+    const s = p.scores[holeIdx];
+    if (!s.dnf) s.entered = true;
+  });
+}
+
+function setHole(i, commitFirst) {
+  const clamped = Math.max(0, Math.min(8, i));
+  if (commitFirst) commitHole(state.currentHole);
+  state.currentHole = clamped;
+  state.view = "hole";
+  saveState();
+  render();
+}
+function setView(v) {
+  if (v === "overview" && state.view === "hole") commitHole(state.currentHole);
+  state.view = v;
+  saveState();
+  render();
+}
+
+function adjustScore(playerId, delta) {
+  const p = state.players.find(x => x.id === playerId);
+  if (!p) return;
+  const s = p.scores[state.currentHole];
+  if (s.dnf) return;
+  s.value = Math.max(1, s.value + delta);
+  s.entered = true;
+  saveState();
+  render();
+}
+function confirmScore(playerId) {
+  const p = state.players.find(x => x.id === playerId);
+  if (!p) return;
+  const s = p.scores[state.currentHole];
+  if (s.dnf) return;
+  s.entered = true;
+  saveState();
+  render();
+}
+function toggleDNF(playerId) {
+  const p = state.players.find(x => x.id === playerId);
+  if (!p) return;
+  const s = p.scores[state.currentHole];
+  s.dnf = !s.dnf;
+  s.entered = true;
+  saveState();
+  render();
+}
+function addMidRoundPlayer(name) {
+  state.players.push(makePlayer(name));
+  saveState();
+  render();
+}
+
+function applyTheme() {
+  if (state.theme === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", state.theme);
+}
+function cycleTheme() {
+  const order = ["auto", "light", "dark"];
+  state.theme = order[(order.indexOf(state.theme) + 1) % order.length];
+  saveState();
+  applyTheme();
+  render();
+}
+
+function rankPlayers(players) {
+  return players.map(p => ({ player: p, totals: playerTotal(p) })).sort((a, b) => {
+    if (!a.totals.any && !b.totals.any) return 0;
+    if (!a.totals.any) return 1;
+    if (!b.totals.any) return -1;
+    const aHasDnf = a.totals.dnfCount > 0;
+    const bHasDnf = b.totals.dnfCount > 0;
+    if (aHasDnf !== bHasDnf) return aHasDnf ? 1 : -1;
+    return a.totals.sum - b.totals.sum;
+  });
+}
+
+function playerStats(p) {
+  const s = { birdies: 0, pars: 0, bogeys: 0, doubles: 0, dnf: 0, best: null, worst: null };
+  for (let i = 0; i < 9; i++) {
+    const sc = p.scores[i];
+    if (sc.dnf) { s.dnf++; continue; }
+    if (!sc.entered) continue;
+    const diff = sc.value - PARS[i];
+    if (diff <= -1) s.birdies++;
+    else if (diff === 0) s.pars++;
+    else if (diff === 1) s.bogeys++;
+    else s.doubles++;
+    if (s.best === null || diff < s.best.diff) s.best = { hole: i + 1, diff, value: sc.value };
+    if (s.worst === null || diff > s.worst.diff) s.worst = { hole: i + 1, diff, value: sc.value };
+  }
+  return s;
+}
+
+function holeCellClass(scoreObj, holeIdx) {
+  if (!scoreObj) return "empty";
+  if (scoreObj.dnf) return "dnf";
+  if (!scoreObj.entered) return "empty";
+  const diff = scoreObj.value - PARS[holeIdx];
+  if (diff <= -1) return "birdie";
+  if (diff === 0) return "par";
+  if (diff === 1) return "bogey";
+  return "double";
+}
+
+function vsParText(vsPar) {
+  return vsPar === 0 ? "E" : vsPar > 0 ? "+" + vsPar : String(vsPar);
+}
+
+function buildShareText(players, savedAt) {
+  const lines = [];
+  lines.push("Ekholmsnäs Golf — " + formatDateLong(savedAt || Date.now()));
+  lines.push("");
+  lines.push("Resultat:");
+  rankPlayers(players).forEach((r, i) => {
+    const t = r.totals;
+    let line = (i + 1) + ". " + r.player.name + ": ";
+    if (t.any && t.sum > 0) {
+      line += t.sum + " (" + vsParText(t.vsPar) + ")";
+      if (t.dnfCount > 0) line += " · " + t.dnfCount + " ofullföljda";
+      const vh = vsHcpResult(r.player);
+      if (vh.status === "ok") {
+        const vsHcpStr = vh.vsHcp === 0 ? "på HCP" : (vh.vsHcp > 0 ? "+" + vh.vsHcp : String(vh.vsHcp)) + " mot HCP";
+        line += " · netto " + vh.net + " (" + vsHcpStr + ")";
+      }
+    } else {
+      line += "–";
+    }
+    lines.push(line);
+  });
+  // HCP-info per spelare
+  const anyHcp = players.some(p => p.hcp != null);
+  if (anyHcp) {
+    lines.push("");
+    lines.push("Handicap:");
+    players.forEach(p => {
+      if (p.hcp == null) return;
+      const ph9 = playingHcp9(p.hcp, p.gender, p.tee);
+      lines.push("  " + p.name + ": HCP " + formatHcp(p.hcp) + " · " + (p.gender === "dam" ? "Dam" : "Herr") + " · Tee " + (p.tee || 1) + " · Spelhcp " + (ph9 != null ? ph9 : "—") + (p.isJunior ? " · Junior" : ""));
+    });
+  }
+  lines.push("");
+  lines.push("Scorekort:");
+  const rows = [];
+  const header = ["Hål"];
+  for (let i = 1; i <= 9; i++) header.push(String(i));
+  header.push("Tot");
+  rows.push(header);
+  rows.push(["Par", ...PARS.map(String), String(totalPar())]);
+  players.forEach(p => {
+    const r = [p.name];
+    for (let i = 0; i < 9; i++) {
+      const s = p.scores[i];
+      r.push(s.dnf ? "X" : s.entered ? String(s.value) : "–");
+    }
+    const t = playerTotal(p);
+    r.push(t.any ? String(t.sum) : "–");
+    rows.push(r);
+  });
+  const widths = [];
+  for (let c = 0; c < rows[0].length; c++) {
+    widths[c] = Math.max.apply(null, rows.map(r => (r[c] || "").length));
+  }
+  rows.forEach((r, idx) => {
+    const padded = r.map((cell, i) => {
+      const s = cell || "";
+      return i === 0 ? s.padEnd(widths[i]) : s.padStart(widths[i]);
+    });
+    lines.push(padded.slice(0, -1).join("  ") + "  | " + padded[padded.length - 1]);
+    if (idx === 1) lines.push("".padEnd(lines[lines.length - 1].length, "-"));
+  });
+  return lines.join("\n");
+}
+
+function shareViaEmail(players, savedAt) {
+  const dateStr = new Date(savedAt || Date.now()).toLocaleDateString("sv-SE");
+  const subject = "Golfrunda Ekholmsnäs " + dateStr;
+  const body = buildShareText(players, savedAt);
+  const href = "mailto:?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+  window.location.href = href;
+}
+
+function playerTotal(p) {
+  let sum = 0, any = false, dnfCount = 0, parSoFar = 0;
+  for (let i = 0; i < 9; i++) {
+    const s = p.scores[i];
+    if (s.dnf) { dnfCount++; any = true; continue; }
+    if (s.entered) { sum += s.value; parSoFar += PARS[i]; any = true; }
+  }
+  return { sum, any, dnfCount, vsPar: sum - parSoFar };
+}
+function totalPar() { return PARS.reduce((a,b)=>a+b,0); }
+
+/* ---------- DOM helpers ---------- */
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+/* ---------- Renderers ---------- */
+function render() {
+  applyTheme();
+  const app = document.getElementById("app");
+  app.innerHTML = "";
+  app.appendChild(renderHeader());
+
+  const v = state.view;
+  if (v === "history") app.appendChild(renderHistory());
+  else if (v === "history-detail") app.appendChild(renderHistoryDetail());
+  else if (v === "players") app.appendChild(renderPlayers());
+  else if (v === "finished" && state.players.length > 0) app.appendChild(renderFinished());
+  else if (v === "overview" && state.players.length > 0) app.appendChild(renderOverview());
+  else if (v !== "setup" && state.players.length > 0) app.appendChild(renderHole());
+  else app.appendChild(renderSetup());
+
+  renderDrawer();
+}
+
+function renderDrawer() {
+  const drawer = document.getElementById("drawer");
+  const backdrop = document.getElementById("drawer-backdrop");
+  const inner = document.getElementById("drawer-inner");
+  drawer.classList.toggle("open", ui.menuOpen);
+  backdrop.classList.toggle("open", ui.menuOpen);
+  drawer.setAttribute("aria-hidden", ui.menuOpen ? "false" : "true");
+  backdrop.onclick = () => toggleMenu(false);
+
+  inner.innerHTML = "";
+
+  // Head
+  const head = el("div", "drawer-head");
+  head.appendChild(el("div", "drawer-title", "Meny"));
+  const close = el("button", "drawer-close", "×");
+  close.setAttribute("aria-label", "Stäng meny");
+  close.onclick = () => toggleMenu(false);
+  head.appendChild(close);
+  inner.appendChild(head);
+
+  // Weather card
+  inner.appendChild(renderWeather());
+
+  // Navigation
+  inner.appendChild(el("div", "drawer-section", "Navigering"));
+
+  const homeItem = el("button", "drawer-item" + (state.view === "setup" || state.view === "hole" ? " active" : ""));
+  homeItem.append(
+    iconSpan(svgHome()),
+    el("span", "label", "Hem"),
+    el("span", "meta", state.players.length > 0 ? "Pågående runda" : "Starta ny")
+  );
+  homeItem.onclick = goHome;
+  inner.appendChild(homeItem);
+
+  const mgmtItem = el("button", "drawer-item" + (state.view === "players" ? " active" : ""));
+  const knownCount = getAllKnownPlayers().length;
+  mgmtItem.append(
+    iconSpan(svgUsers()),
+    el("span", "label", "Hantera spelare"),
+    el("span", "meta", knownCount + " sparade")
+  );
+  mgmtItem.onclick = () => {
+    ui.menuOpen = false;
+    state.view = "players";
+    saveState();
+    render();
+  };
+  inner.appendChild(mgmtItem);
+
+  const histItem = el("button", "drawer-item" + (state.view === "history" || state.view === "history-detail" ? " active" : ""));
+  const histCount = (state.history || []).length;
+  histItem.append(
+    iconSpan(svgClock()),
+    el("span", "label", "Historik"),
+    el("span", "meta", histCount === 0 ? "Inga" : histCount + (histCount === 1 ? " runda" : " rundor"))
+  );
+  histItem.onclick = goHistory;
+  inner.appendChild(histItem);
+
+  // Round actions
+  if (state.players.length > 0) {
+    inner.appendChild(el("div", "drawer-section", "Aktuell runda"));
+
+    if (roundHasScores()) {
+      const finishItem = el("button", "drawer-item");
+      finishItem.append(
+        iconSpan(svgCheck()),
+        el("span", "label", "Avsluta runda")
+      );
+      finishItem.onclick = () => {
+        ui.menuOpen = false;
+        state.view = "finished";
+        saveState();
+        render();
+      };
+      inner.appendChild(finishItem);
+    }
+
+    const discardItem = el("button", "drawer-item danger");
+    discardItem.append(
+      iconSpan(svgTrash()),
+      el("span", "label", "Släng rundan")
+    );
+    discardItem.onclick = () => { ui.menuOpen = false; discardRound(); };
+    inner.appendChild(discardItem);
+  }
+}
+
+function iconSpan(svgMarkup) {
+  const s = el("span", "icon");
+  s.innerHTML = svgMarkup;
+  return s;
+}
+function svgHome() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 L12 3 L21 11"/><path d="M5 10 L5 20 L19 20 L19 10"/></svg>';
+}
+function svgClock() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/></svg>';
+}
+function svgCheck() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
+}
+function svgTrash() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 20 7"/><path d="M10 7 L10 4 L14 4 L14 7"/><path d="M6 7 L7 20 L17 20 L18 7"/></svg>';
+}
+function svgMenu() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+}
+function svgUsers() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><circle cx="17" cy="9" r="2.2"/><path d="M16 14.5c2.5 0 5 1.3 5 4.5"/></svg>';
+}
+
+function getAllKnownPlayers() {
+  const set = new Set();
+  DEFAULT_PLAYERS.forEach(n => set.add(n));
+  Object.keys(state.playerProfiles || {}).forEach(n => set.add(n));
+  (state.setupSelected || []).forEach(n => set.add(n));
+  return Array.from(set);
+}
+function deletePlayer(name) {
+  if (DEFAULT_PLAYERS.includes(name)) return;
+  if (!confirm("Radera spelaren " + name + " och deras profil?")) return;
+  if (state.playerProfiles) delete state.playerProfiles[name];
+  state.setupSelected = state.setupSelected.filter(n => n !== name);
+  saveState();
+  render();
+}
+function clearPlayerHcp(name) {
+  if (!confirm("Rensa HCP för " + name + "?")) return;
+  state.playerProfiles = state.playerProfiles || {};
+  const cur = getPlayerProfile(name);
+  state.playerProfiles[name] = Object.assign(cur, { hcp: null, isJunior: false });
+  saveState();
+  render();
+}
+
+function renderWeather() {
+  const card = el("div", "weather-card");
+
+  // No data yet, currently loading
+  if (!weather.data && weather.loading) {
+    card.appendChild(el("div", "weather-state", "Hämtar väder…"));
+    return card;
+  }
+  // No data, failed
+  if (!weather.data && weather.error) {
+    card.appendChild(el("div", "weather-state error", "Kunde inte hämta väder"));
+    const retry = el("button", "weather-retry", "Försök igen");
+    retry.onclick = () => fetchWeather(true);
+    card.appendChild(retry);
+    return card;
+  }
+  // No data, idle (shouldn't really happen since we fetch on load)
+  if (!weather.data) {
+    card.appendChild(el("div", "weather-state", "Inget väder ännu"));
+    const retry = el("button", "weather-retry", "Hämta väder");
+    retry.onclick = () => fetchWeather(true);
+    card.appendChild(retry);
+    return card;
+  }
+
+  const d = weather.data;
+  const temp = Math.round(d.temperature_2m);
+  const feels = Math.round(d.apparent_temperature);
+  const ws = (d.wind_speed_10m ?? 0).toFixed(1);
+  const wg = d.wind_gusts_10m != null ? d.wind_gusts_10m.toFixed(1) : null;
+  const wdDeg = d.wind_direction_10m ?? 0;
+  const wd = windDir(wdDeg);
+
+  // Main: temp + condition
+  const main = el("div", "weather-main");
+  main.appendChild(el("div", "weather-temp", temp + "°"));
+  const condWrap = el("div");
+  condWrap.appendChild(el("div", "weather-cond", weatherDesc(d.weather_code)));
+  condWrap.appendChild(el("div", "weather-feels", "Känns som " + feels + "°"));
+  main.appendChild(condWrap);
+  card.appendChild(main);
+
+  // Wind
+  const wind = el("div", "weather-wind");
+  const arrow = el("div", "wind-arrow");
+  arrow.style.transform = "rotate(" + (wdDeg + 180) + "deg)";
+  arrow.title = "Vind från " + wd;
+  arrow.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="21"/><polyline points="5 10 12 3 19 10"/></svg>';
+  const info = el("div", "wind-info");
+  const speedEl = el("div", "wind-speed");
+  speedEl.innerHTML = ws + ' <span class="unit">m/s</span>';
+  info.appendChild(speedEl);
+  info.appendChild(el("div", "wind-dir", "från " + wd + (wg ? " · byar " + wg : "")));
+  wind.append(arrow, info);
+  card.appendChild(wind);
+
+  // Meta + refresh
+  const meta = el("div", "weather-meta");
+  const stamp = "Uppdaterad " + timeHHMM(weather.fetchedAt);
+  const refreshLabel = weather.loading ? "uppdaterar…" : "uppdatera";
+  meta.innerHTML = stamp + ' · <span class="refresh-link">' + refreshLabel + "</span>";
+  const link = meta.querySelector(".refresh-link");
+  link.onclick = () => fetchWeather(true);
+  card.appendChild(meta);
+
+  return card;
+}
+
+function renderHeader() {
+  const div = el("div", "header");
+
+  const menuBtn = el("button", "menu-btn");
+  menuBtn.setAttribute("aria-label", "Öppna meny");
+  menuBtn.innerHTML = svgMenu();
+  menuBtn.onclick = () => toggleMenu(true);
+
+  const h1 = el("h1");
+  h1.innerHTML = `${COURSE_NAME} <span class="muted">· 9 hål</span>`;
+
+  const themeBtn = el("button", "theme-toggle");
+  themeBtn.setAttribute("aria-label", "Byt tema");
+  themeBtn.title = "Tema: " + state.theme;
+  themeBtn.textContent = state.theme === "auto" ? "◐" : state.theme === "light" ? "☀" : "☾";
+  themeBtn.onclick = cycleTheme;
+
+  div.append(menuBtn, h1, themeBtn);
+  return div;
+}
+
+function renderSetup() {
+  const wrap = el("div", "setup");
+  wrap.append(
+    el("h2", "", "Ny runda"),
+    el("p", "lede", "Välj spelare")
+  );
+
+  const makeChip = (name, isSel, onClick, checkChar) => {
+    const profile = getPlayerProfile(name);
+    const btn = el("button", "player-chip" + (isSel ? " selected" : ""));
+    const nameWrap = el("span", "name");
+    nameWrap.appendChild(Object.assign(el("span", ""), { textContent: name }));
+    if (profile.hcp != null) {
+      const ph9 = playingHcp9(profile.hcp, profile.gender, profile.tee);
+      const sub = el("span", "chip-sub");
+      sub.textContent = "HCP " + formatHcp(profile.hcp) +
+        (ph9 != null ? " · sp " + ph9 : "") +
+        (profile.isJunior ? " · JR" : "");
+      nameWrap.appendChild(sub);
+    }
+    btn.append(nameWrap, Object.assign(el("span", "check"), { textContent: checkChar }));
+    btn.onclick = onClick;
+    return btn;
+  };
+
+  DEFAULT_PLAYERS.forEach(name => {
+    const isSel = state.setupSelected.includes(name);
+    wrap.appendChild(makeChip(name, isSel, () => {
+      if (isSel) state.setupSelected = state.setupSelected.filter(n => n !== name);
+      else state.setupSelected = [...state.setupSelected, name];
+      saveState();
+      render();
+    }, "✓"));
+  });
+
+  // Custom-tillagda namn (selected)
+  const customSelected = state.setupSelected.filter(n => !DEFAULT_PLAYERS.includes(n));
+  customSelected.forEach(name => {
+    wrap.appendChild(makeChip(name, true, () => {
+      state.setupSelected = state.setupSelected.filter(n => n !== name);
+      saveState();
+      render();
+    }, "×"));
+  });
+
+  // Lägg till annan spelare
+  const addRow = el("div", "add-row");
+  const input = el("input");
+  input.type = "text";
+  input.placeholder = "Lägg till annan spelare";
+  input.maxLength = 20;
+  const addBtn = el("button", "add-btn", "+");
+  const onAdd = () => {
+    const name = input.value.trim();
+    if (!name) return;
+    if (!state.playerProfiles) state.playerProfiles = {};
+    if (!state.playerProfiles[name]) state.playerProfiles[name] = blankProfile();
+    if (!state.setupSelected.includes(name)) state.setupSelected.push(name);
+    input.value = "";
+    saveState();
+    render();
+  };
+  addBtn.onclick = onAdd;
+  input.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } });
+  addRow.append(input, addBtn);
+  wrap.appendChild(addRow);
+
+  const start = el("button", "primary-btn", "Starta runda");
+  start.disabled = state.setupSelected.length === 0;
+  start.onclick = startRound;
+  wrap.appendChild(start);
+
+  const manage = el("button", "setup-manage-link", "Hantera spelare och HCP →");
+  manage.onclick = () => { state.view = "players"; saveState(); render(); };
+  wrap.appendChild(manage);
+
+  return wrap;
+}
+
+function renderPlayers() {
+  const wrap = el("div", "players-view");
+  wrap.appendChild(el("h2", "", "Hantera spelare"));
+  wrap.appendChild(el("p", "lede", "HCP, kön och tee används för att räkna ut spelhcp och resultat mot HCP."));
+
+  // Lägg till spelare
+  const addRow = el("div", "add-row");
+  const input = el("input");
+  input.type = "text";
+  input.placeholder = "Lägg till ny spelare";
+  input.maxLength = 20;
+  const addBtn = el("button", "add-btn", "+");
+  const onAdd = () => {
+    const name = input.value.trim();
+    if (!name) return;
+    if (!state.playerProfiles) state.playerProfiles = {};
+    if (!state.playerProfiles[name]) state.playerProfiles[name] = blankProfile();
+    input.value = "";
+    saveState();
+    render();
+  };
+  addBtn.onclick = onAdd;
+  input.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } });
+  addRow.append(input, addBtn);
+  wrap.appendChild(addRow);
+
+  // Lista alla kända spelare
+  const known = getAllKnownPlayers();
+  known.forEach(name => {
+    const card = el("div", "player-mgmt-card");
+    const head = el("div", "player-mgmt-head");
+    head.appendChild(Object.assign(el("h3", "player-mgmt-name"), { textContent: name }));
+    if (!DEFAULT_PLAYERS.includes(name)) {
+      const del = el("button", "delete-player");
+      del.innerHTML = svgTrash() + "<span>Radera</span>";
+      del.onclick = () => deletePlayer(name);
+      head.appendChild(del);
+    }
+    card.appendChild(head);
+    card.appendChild(renderPlayerForm(name, false));
+    wrap.appendChild(card);
+  });
+
+  const back = el("button", "primary-btn", "Klar");
+  back.onclick = () => { state.view = "setup"; saveState(); render(); };
+  wrap.appendChild(back);
+
+  return wrap;
+}
+
+function renderPlayerForm(name, isCustom) {
+  const profile = getPlayerProfile(name);
+  const form = el("div", "player-form");
+
+  // Rad 1: HCP-input
+  const row1 = el("div", "form-row");
+
+  const hcpField = el("label", "form-field");
+  hcpField.appendChild(el("span", "field-label", "Handicap"));
+  const hcpInput = el("input", "field-input");
+  hcpInput.type = "text";
+  hcpInput.inputMode = "decimal";
+  hcpInput.placeholder = "t.ex. 18,5 eller +1,2";
+  hcpInput.value = formatHcp(profile.hcp);
+  hcpInput.addEventListener("change", e => {
+    const v = parseHcp(e.target.value);
+    updatePlayerProfile(name, { hcp: v });
+    render();
+  });
+  hcpInput.addEventListener("blur", () => {
+    hcpInput.value = formatHcp(getPlayerProfile(name).hcp);
+  });
+  hcpField.appendChild(hcpInput);
+  row1.appendChild(hcpField);
+  form.appendChild(row1);
+
+  // Rad 2: Kön + Tee
+  const row2 = el("div", "form-row");
+  row2.appendChild(renderSegmented("Kön", [
+    { value: "herr", label: "Herr" },
+    { value: "dam",  label: "Dam" },
+  ], profile.gender, v => { updatePlayerProfile(name, { gender: v }); render(); }));
+  row2.appendChild(renderSegmented("Tee", [
+    { value: 1, label: "Tee 1" },
+    { value: 2, label: "Tee 2" },
+  ], profile.tee, v => { updatePlayerProfile(name, { tee: v }); render(); }));
+  form.appendChild(row2);
+
+  // Junior toggle
+  const juniorRow = el("div", "junior-row" + (profile.isJunior ? " checked" : ""));
+  const jbtn = el("button");
+  const box = el("span", "checkbox");
+  box.innerHTML = profile.isJunior ? '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>' : "";
+  jbtn.appendChild(box);
+  jbtn.appendChild(Object.assign(el("span", "label"), { textContent: "Junior HCP" }));
+  jbtn.onclick = () => { updatePlayerProfile(name, { isJunior: !profile.isJunior }); render(); };
+  juniorRow.appendChild(jbtn);
+  form.appendChild(juniorRow);
+
+  // Spelhcp-preview
+  if (profile.hcp != null) {
+    const ph9 = playingHcp9(profile.hcp, profile.gender, profile.tee);
+    const info = el("div", "spelhcp-info");
+    info.appendChild(Object.assign(el("span", "label"), { textContent: "Spelhcp 9 hål" }));
+    info.appendChild(Object.assign(el("span", ""), { textContent: ph9 != null ? String(ph9) : "—" }));
+    form.appendChild(info);
+  }
+
+  return form;
+}
+
+function renderSegmented(label, options, currentValue, onChange) {
+  const wrap = el("div", "form-field");
+  wrap.appendChild(el("span", "field-label", label));
+  const seg = el("div", "segmented");
+  options.forEach(opt => {
+    const b = el("button", currentValue === opt.value ? "active" : "");
+    b.type = "button";
+    b.textContent = opt.label;
+    b.onclick = () => onChange(opt.value);
+    seg.appendChild(b);
+  });
+  wrap.appendChild(seg);
+  return wrap;
+}
+
+function renderHole() {
+  const wrap = el("div");
+  const h = state.currentHole;
+  const par = PARS[h];
+
+  const head = el("div", "hole-header");
+  head.append(
+    el("div", "hole-label", "Hål"),
+    el("div", "hole-number", String(h + 1)),
+    el("div", "hole-par", "Par " + par)
+  );
+  wrap.appendChild(head);
+
+  state.players.forEach(p => wrap.appendChild(renderPlayerRow(p)));
+
+  // Add player mid-round (collapsed by default)
+  const det = el("details", "add-mid");
+  const sum = el("summary", "", "+ Lägg till spelare");
+  det.appendChild(sum);
+
+  // Quick-add for preset players not already in the round
+  const inRoundNames = state.players.map(p => p.name);
+  const availableDefaults = DEFAULT_PLAYERS.filter(n => !inRoundNames.includes(n));
+  availableDefaults.forEach(name => {
+    const btn = el("button", "player-chip");
+    btn.append(
+      Object.assign(el("span", "name"), { textContent: name }),
+      Object.assign(el("span", "check"), { textContent: "+" })
+    );
+    btn.onclick = () => addMidRoundPlayer(name);
+    det.appendChild(btn);
+  });
+
+  const addRow = el("div", "add-row");
+  const input = el("input");
+  input.type = "text";
+  input.placeholder = "Annat namn";
+  input.maxLength = 20;
+  const addBtn = el("button", "add-btn", "+");
+  const onAdd = () => {
+    const name = input.value.trim();
+    if (!name) return;
+    input.value = "";
+    addMidRoundPlayer(name);
+  };
+  addBtn.onclick = onAdd;
+  input.addEventListener("keypress", e => { if (e.key === "Enter") { e.preventDefault(); onAdd(); } });
+  addRow.append(input, addBtn);
+  det.appendChild(addRow);
+  wrap.appendChild(det);
+
+  // Navigation
+  const nav = el("div", "nav-bar");
+  const prev = el("button", "nav-btn arrow", "←");
+  prev.disabled = h === 0;
+  prev.onclick = () => setHole(h - 1, true);
+
+  const overviewBtn = el("button", "nav-btn", "Översikt");
+  overviewBtn.onclick = () => setView("overview");
+
+  const next = el("button", "nav-btn arrow primary", h === 8 ? "✓" : "→");
+  next.onclick = () => {
+    if (h === 8) { commitHole(8); setView("finished"); }
+    else setHole(h + 1, true);
+  };
+  next.title = h === 8 ? "Avsluta runda" : "Nästa hål";
+
+  nav.append(prev, overviewBtn, next);
+  wrap.appendChild(nav);
+
+  return wrap;
+}
+
+function renderPlayerRow(p) {
+  const score = p.scores[state.currentHole];
+  const par = PARS[state.currentHole];
+  const tot = playerTotal(p);
+
+  const row = el("div", "player-row" + (score.dnf ? " dnf" : ""));
+
+  const top = el("div", "player-row-top");
+  const nameEl = el("div", "player-name-row");
+  nameEl.appendChild(Object.assign(el("span", "player-name"), { textContent: p.name }));
+  if (p.hcp != null) {
+    const ph9 = playingHcp9(p.hcp, p.gender, p.tee);
+    const pill = el("span", "hcp-pill");
+    pill.textContent = "HCP " + formatHcp(p.hcp) + (ph9 != null ? " · sp " + ph9 : "");
+    nameEl.appendChild(pill);
+  }
+  if (p.isJunior) {
+    nameEl.appendChild(Object.assign(el("span", "junior-tag"), { textContent: "JR" }));
+  }
+  const totalEl = el("div", "player-total");
+  if (tot.any) {
+    totalEl.textContent = "Totalt: " + tot.sum;
+    if (tot.sum > 0) {
+      const vs = el("span", "vs-par" + (tot.vsPar > 0 ? " over" : ""));
+      vs.textContent = tot.vsPar === 0 ? "E" : (tot.vsPar > 0 ? "+" + tot.vsPar : String(tot.vsPar));
+      totalEl.appendChild(vs);
+    }
+    if (tot.dnfCount > 0) {
+      totalEl.append(" · " + tot.dnfCount + " X");
+    }
+  } else {
+    totalEl.textContent = "—";
+  }
+  top.append(nameEl, totalEl);
+  row.appendChild(top);
+
+  const ctrl = el("div", "score-controls");
+  const minus = el("button", "score-btn", "−");
+  minus.disabled = score.dnf;
+  minus.onclick = () => adjustScore(p.id, -1);
+  const display = el("button", "score-display" + (!score.entered && !score.dnf ? " unentered" : ""));
+  display.textContent = score.dnf ? "X" : String(score.value);
+  display.disabled = score.dnf;
+  display.title = score.entered ? "" : "Tryck för att bekräfta par";
+  display.onclick = () => confirmScore(p.id);
+  const plus = el("button", "score-btn", "+");
+  plus.disabled = score.dnf;
+  plus.onclick = () => adjustScore(p.id, 1);
+  ctrl.append(minus, display, plus);
+  row.appendChild(ctrl);
+
+  const meta = el("div", "score-meta");
+  if (score.dnf) {
+    meta.textContent = "Fullföljde inte hålet";
+  } else if (score.entered) {
+    const diff = score.value - par;
+    const badge = el("span", "badge" + (diff < 0 ? " under" : diff > 0 ? " over" : ""));
+    badge.textContent = diff === 0 ? "Par" : diff > 0 ? "+" + diff : String(diff);
+    meta.appendChild(badge);
+  } else {
+    meta.textContent = "Tryck siffran för par";
+  }
+  row.appendChild(meta);
+
+  const dnfBtn = el("button", "dnf-toggle" + (score.dnf ? " active" : ""));
+  dnfBtn.textContent = score.dnf ? "Markerad som inte fullföljd ✓" : "Fullföljde inte hålet";
+  dnfBtn.onclick = () => toggleDNF(p.id);
+  row.appendChild(dnfBtn);
+
+  return row;
+}
+
+function renderScorecard(players, highlightHole) {
+  const tblWrap = el("div", "overview-wrap");
+  const scroll = el("div", "overview-scroll");
+  const tbl = el("table", "overview-table");
+
+  const thead = el("thead");
+  const trH = el("tr");
+  trH.appendChild(el("th", "name-cell", ""));
+  for (let i = 0; i < 9; i++) {
+    const th = el("th", "", String(i + 1));
+    if (i === highlightHole) th.classList.add("current-col");
+    trH.appendChild(th);
+  }
+  trH.appendChild(el("th", "", "Tot"));
+  thead.appendChild(trH);
+  tbl.appendChild(thead);
+
+  const tbody = el("tbody");
+
+  const parRow = el("tr", "par-row");
+  parRow.appendChild(el("td", "name-cell", "Par"));
+  for (let i = 0; i < 9; i++) {
+    const td = el("td", "", String(PARS[i]));
+    if (i === highlightHole) td.classList.add("current-col");
+    parRow.appendChild(td);
+  }
+  parRow.appendChild(el("td", "total-cell", String(totalPar())));
+  tbody.appendChild(parRow);
+
+  players.forEach(p => {
+    const tr = el("tr");
+    tr.appendChild(el("td", "name-cell", p.name));
+    for (let i = 0; i < 9; i++) {
+      const s = p.scores[i];
+      let td;
+      if (s.dnf) td = el("td", "dnf-cell", "X");
+      else if (s.entered) td = el("td", "", String(s.value));
+      else td = el("td", "empty-cell", "–");
+      if (i === highlightHole) td.classList.add("current-col");
+      tr.appendChild(td);
+    }
+    const tot = playerTotal(p);
+    const totTd = el("td", "total-cell", tot.any ? String(tot.sum) : "–");
+    tr.appendChild(totTd);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);
+  scroll.appendChild(tbl);
+  tblWrap.appendChild(scroll);
+  return tblWrap;
+}
+
+function renderOverview() {
+  const wrap = el("div", "overview");
+  wrap.append(el("h2", "", "Scorekort"));
+
+  const totLine = el("div", "overview-tot-line");
+  totLine.append(
+    el("div", "", COURSE_NAME + " · Par " + totalPar()),
+    el("div", "", state.players.length + " spelare")
+  );
+  wrap.appendChild(totLine);
+
+  // Scorecard with clickable cells to jump to that hole
+  const card = renderScorecard(state.players, state.currentHole);
+  card.querySelectorAll("tbody tr:not(.par-row) td:not(.name-cell):not(.total-cell)").forEach((td, idx) => {
+    const holeIdx = idx % 9;
+    td.style.cursor = "pointer";
+    td.onclick = () => setHole(holeIdx, false);
+  });
+  wrap.appendChild(card);
+
+  if (roundHasScores()) {
+    const save = el("button", "primary-btn", "Avsluta runda");
+    save.onclick = () => setView("finished");
+    wrap.appendChild(save);
+  }
+
+  const back = el("button", "secondary-btn", "Tillbaka till hål " + (state.currentHole + 1));
+  back.onclick = () => setView("hole");
+  wrap.appendChild(back);
+
+  return wrap;
+}
+
+function renderHistory() {
+  const wrap = el("div", "history");
+  wrap.append(el("h2", "", "Historik"));
+
+  const list = state.history || [];
+  if (list.length === 0) {
+    wrap.appendChild(el("p", "lede", "Inga sparade rundor ännu."));
+    const empty = el("div", "history-empty", "När du avslutar en runda sparas den här.");
+    wrap.appendChild(empty);
+    return wrap;
+  }
+
+  wrap.appendChild(el("p", "lede", list.length + (list.length === 1 ? " sparad runda" : " sparade rundor")));
+
+  list.forEach(r => {
+    const card = el("div", "history-card");
+    card.appendChild(el("div", "date", formatDateLong(r.savedAt)));
+
+    const players = el("div", "players");
+    r.players.forEach(p => {
+      const tot = playerTotal(p);
+      const line = el("div", "player-line");
+      line.appendChild(el("span", "name", p.name));
+      const score = el("span", "score");
+      if (tot.any) {
+        score.textContent = String(tot.sum);
+        if (tot.sum > 0) {
+          const vsClass = tot.vsPar > 0 ? "vs over" : tot.vsPar < 0 ? "vs under" : "vs";
+          const vs = el("span", vsClass);
+          vs.textContent = tot.vsPar === 0 ? "E" : tot.vsPar > 0 ? "+" + tot.vsPar : String(tot.vsPar);
+          score.appendChild(vs);
+        }
+        if (tot.dnfCount > 0) {
+          const dnf = el("span", "dnf");
+          dnf.textContent = tot.dnfCount + " X";
+          score.appendChild(dnf);
+        }
+      } else {
+        score.textContent = "–";
+      }
+      line.appendChild(score);
+      players.appendChild(line);
+    });
+    card.appendChild(players);
+
+    const actions = el("div", "actions");
+    const viewBtn = el("button", "", "Visa scorekort");
+    viewBtn.onclick = () => viewHistoryRound(r.id);
+    const delBtn = el("button", "delete-btn");
+    delBtn.innerHTML = svgTrash() + "<span>Radera</span>";
+    delBtn.onclick = () => deleteHistoryEntry(r.id);
+    actions.append(viewBtn, delBtn);
+    card.appendChild(actions);
+
+    wrap.appendChild(card);
+  });
+
+  const clearAll = el("button", "history-clear");
+  clearAll.innerHTML = svgTrash() + "<span>Radera alla rundor</span>";
+  clearAll.onclick = clearAllHistory;
+  wrap.appendChild(clearAll);
+
+  return wrap;
+}
+
+function renderHistoryDetail() {
+  const entry = (state.history || []).find(r => r.id === state.viewingHistoryId);
+  if (!entry) {
+    state.view = "history";
+    return renderHistory();
+  }
+  const wrap = el("div", "overview");
+  wrap.append(el("h2", "", "Scorekort"));
+
+  const totLine = el("div", "overview-tot-line");
+  totLine.append(
+    el("div", "", formatDateLong(entry.savedAt)),
+    el("div", "", entry.players.length + " spelare")
+  );
+  wrap.appendChild(totLine);
+
+  wrap.appendChild(renderScorecard(entry.players, -1));
+
+  const back = el("button", "primary-btn", "Tillbaka till historik");
+  back.onclick = () => { state.view = "history"; state.viewingHistoryId = null; saveState(); render(); };
+  wrap.appendChild(back);
+
+  const del = el("button", "secondary-btn", "Radera denna runda");
+  del.style.color = "var(--danger)";
+  del.onclick = () => deleteHistoryEntry(entry.id);
+  wrap.appendChild(del);
+
+  return wrap;
+}
+
+function renderFinished() {
+  const wrap = el("div");
+
+  // Hero
+  const hero = el("div", "finished-hero");
+  const check = el("div", "check-circle");
+  check.innerHTML = '<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 12 10 18 20 6"/></svg>';
+  hero.appendChild(check);
+  hero.appendChild(el("h2", "", "Runda klar!"));
+  hero.appendChild(el("div", "sub", COURSE_NAME + " · " + formatDateLong(Date.now())));
+  wrap.appendChild(hero);
+
+  // Ranking
+  wrap.appendChild(el("div", "section-title", "Rangordning"));
+  const ranked = rankPlayers(state.players);
+  const ranking = el("div", "ranking");
+  const medalClasses = ["gold", "silver", "bronze"];
+  ranked.forEach((r, i) => {
+    const row = el("div", "ranking-row" + (i < 3 && r.totals.any ? " " + medalClasses[i] : ""));
+    row.appendChild(el("div", "ranking-rank", String(i + 1)));
+
+    const nameWrap = el("div", "ranking-name");
+    nameWrap.appendChild(Object.assign(el("span"), { textContent: r.player.name }));
+    const vh = vsHcpResult(r.player);
+    if (vh.status === "ok") {
+      const sub = el("div");
+      sub.style.fontSize = "12px";
+      sub.style.color = "var(--text-muted)";
+      sub.style.fontWeight = "500";
+      sub.style.marginTop = "2px";
+      const cls = vh.vsHcp < 0 ? "vs-hcp under" : vh.vsHcp > 0 ? "vs-hcp over" : "vs-hcp even";
+      sub.innerHTML = "Netto " + vh.net + " · <span class=\"" + cls + "\">" + (vh.vsHcp === 0 ? "På HCP" : vh.vsHcp > 0 ? "+" + vh.vsHcp + " mot HCP" : vh.vsHcp + " mot HCP") + "</span>";
+      nameWrap.appendChild(sub);
+    } else if (r.player.hcp != null) {
+      const sub = el("div");
+      sub.style.fontSize = "12px";
+      sub.style.color = "var(--text-muted)";
+      sub.style.fontWeight = "500";
+      sub.style.marginTop = "2px";
+      sub.textContent = "HCP " + formatHcp(r.player.hcp) + (r.player.isJunior ? " · JR" : "");
+      nameWrap.appendChild(sub);
+    }
+    row.appendChild(nameWrap);
+
+    const sc = el("div", "ranking-score");
+    if (r.totals.any && r.totals.sum > 0) {
+      sc.textContent = String(r.totals.sum);
+      const vsClass = r.totals.vsPar > 0 ? "vs over" : r.totals.vsPar < 0 ? "vs under" : "vs";
+      const vs = el("span", vsClass);
+      vs.textContent = vsParText(r.totals.vsPar);
+      sc.appendChild(vs);
+      if (r.totals.dnfCount > 0) {
+        const tag = el("span", "dnf-tag");
+        tag.textContent = r.totals.dnfCount + " X";
+        sc.appendChild(tag);
+      }
+    } else {
+      sc.textContent = "–";
+    }
+    row.appendChild(sc);
+    ranking.appendChild(row);
+  });
+  wrap.appendChild(ranking);
+
+  // Scorekort
+  wrap.appendChild(el("div", "section-title", "Scorekort"));
+  wrap.appendChild(renderScorecard(state.players, -1));
+
+  // Per-player detaljer
+  wrap.appendChild(el("div", "section-title", "Detaljer per spelare"));
+  ranked.forEach(r => wrap.appendChild(renderPlayerDetail(r.player)));
+
+  // Share
+  const share = el("button", "share-btn");
+  share.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg><span>Dela via mail</span>';
+  share.onclick = () => shareViaEmail(state.players, Date.now());
+  wrap.appendChild(share);
+
+  // Primary action: save + new
+  const saveBtn = el("button", "primary-btn", "Spara och starta ny");
+  saveBtn.onclick = endRoundAndSave;
+  wrap.appendChild(saveBtn);
+
+  // Tertiary: back to last hole to edit
+  const back = el("button", "text-link");
+  back.textContent = "← Tillbaka till hål " + (state.currentHole + 1) + " för att ändra";
+  back.onclick = () => { state.view = "hole"; saveState(); render(); };
+  wrap.appendChild(back);
+
+  // Discard
+  const discard = el("button", "text-link danger", "Släng utan att spara");
+  discard.onclick = discardRound;
+  wrap.appendChild(discard);
+
+  return wrap;
+}
+
+function renderPlayerDetail(p) {
+  const wrap = el("div", "player-detail");
+  const tot = playerTotal(p);
+  const stats = playerStats(p);
+
+  const head = el("div", "player-detail-head");
+  head.appendChild(el("div", "name", p.name));
+  const total = el("div", "total");
+  if (tot.any && tot.sum > 0) {
+    total.textContent = String(tot.sum);
+    const vsClass = tot.vsPar > 0 ? "vs over" : tot.vsPar < 0 ? "vs under" : "vs";
+    const vs = el("span", vsClass);
+    vs.textContent = vsParText(tot.vsPar);
+    total.appendChild(vs);
+  } else {
+    total.textContent = "–";
+  }
+  head.appendChild(total);
+  wrap.appendChild(head);
+
+  const strip = el("div", "holes-strip");
+  for (let i = 0; i < 9; i++) {
+    const s = p.scores[i];
+    const cls = holeCellClass(s, i);
+    const cell = el("div", "hole-cell " + cls);
+    const num = el("span");
+    num.textContent = s.dnf ? "X" : s.entered ? String(s.value) : "–";
+    cell.appendChild(num);
+    const lbl = el("span", "h-label");
+    lbl.textContent = "H" + (i + 1);
+    cell.appendChild(lbl);
+    strip.appendChild(cell);
+  }
+  wrap.appendChild(strip);
+
+  const grid = el("div", "stat-grid");
+  const makePill = (n, l) => {
+    const p2 = el("div", "stat-pill");
+    p2.appendChild(Object.assign(el("span", "num"), { textContent: String(n) }));
+    p2.appendChild(Object.assign(el("span", "label"), { textContent: l }));
+    return p2;
+  };
+  grid.append(
+    makePill(stats.birdies, "Birdie"),
+    makePill(stats.pars, "Par"),
+    makePill(stats.bogeys, "Bogey"),
+    makePill(stats.doubles + stats.dnf, stats.dnf > 0 ? "Dbl+/X" : "Dbl+")
+  );
+  wrap.appendChild(grid);
+
+  if (stats.best || stats.worst) {
+    const extras = el("div", "player-extras");
+    if (stats.best) {
+      const e = el("div");
+      e.innerHTML = "Bästa: <strong>Hål " + stats.best.hole + "</strong> (" + vsParText(stats.best.diff) + ")";
+      extras.appendChild(e);
+    }
+    if (stats.worst && (!stats.best || stats.worst.hole !== stats.best.hole)) {
+      const e = el("div");
+      e.innerHTML = "Sämsta: <strong>Hål " + stats.worst.hole + "</strong> (" + vsParText(stats.worst.diff) + ")";
+      extras.appendChild(e);
+    }
+    wrap.appendChild(extras);
+  }
+
+  // HCP-rad
+  if (p.hcp != null) {
+    const vh = vsHcpResult(p);
+    const hcpRow = el("div", "vs-hcp-line");
+    let txt = "HCP " + formatHcp(p.hcp);
+    const ph9 = playingHcp9(p.hcp, p.gender, p.tee);
+    if (ph9 != null) txt += " · Spelhcp " + ph9;
+    if (p.isJunior) txt += " · Junior";
+    if (vh.status === "ok") {
+      txt += " · Netto " + vh.net + " · ";
+      hcpRow.textContent = txt;
+      const cls = vh.vsHcp < 0 ? "vs-hcp under" : vh.vsHcp > 0 ? "vs-hcp over" : "vs-hcp even";
+      const span = el("span", cls);
+      span.textContent = vh.vsHcp === 0 ? "På HCP" : (vh.vsHcp > 0 ? "+" + vh.vsHcp : String(vh.vsHcp)) + " mot HCP";
+      hcpRow.appendChild(span);
+    } else if (vh.status === "dnf") {
+      hcpRow.textContent = txt + " · DNF — HCP räknas ej";
+    } else if (vh.status === "incomplete") {
+      hcpRow.textContent = txt + " · ej alla hål spelade";
+    } else {
+      hcpRow.textContent = txt;
+    }
+    wrap.appendChild(hcpRow);
+  }
+
+  return wrap;
+}
+
+const MONTHS_SV = ["jan","feb","mar","apr","maj","jun","jul","aug","sep","okt","nov","dec"];
+function formatDateLong(ts) {
+  const d = new Date(ts);
+  const day = d.getDate();
+  const mo = MONTHS_SV[d.getMonth()];
+  const yr = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return day + " " + mo + " " + yr + " · " + hh + ":" + mm;
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && ui.menuOpen) toggleMenu(false);
+});
+
+render();
+fetchWeather();
+setInterval(() => fetchWeather(false), 5 * 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) fetchWeather(false);
+});
+</script>
+</body>
+</html>
