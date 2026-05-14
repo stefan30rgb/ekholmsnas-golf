@@ -865,6 +865,368 @@ button:disabled { cursor: not-allowed; }
   box-shadow: none;
   padding: 0;
 }
+/* ---------- Round Wrapped overlay ---------- */
+.wrapped-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  background: #0d2818;
+  transition: background 0.4s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.wrapped-overlay.theme-opening { background: linear-gradient(180deg, #1f4a36 0%, #0a1d14 100%); }
+.wrapped-overlay.theme-score { background: linear-gradient(180deg, #2d7a4a 0%, #102b1c 100%); }
+.wrapped-overlay.theme-hero { background: linear-gradient(180deg, #a4811e 0%, #2e2208 100%); }
+.wrapped-overlay.theme-villain { background: linear-gradient(180deg, #3a3a44 0%, #14141a 100%); }
+.wrapped-overlay.theme-stats { background: linear-gradient(180deg, #1f4a7a 0%, #0a1830 100%); }
+.wrapped-overlay.theme-frontback { background: linear-gradient(180deg, #5a3070 0%, #1c0e30 100%); }
+.wrapped-overlay.theme-net { background: linear-gradient(180deg, #2a8068 0%, #0a2820 100%); }
+.wrapped-overlay.theme-persona { background: linear-gradient(180deg, #7a3a96 0%, #1a0a30 100%); }
+.wrapped-overlay.theme-closing { background: linear-gradient(180deg, #20202a 0%, #08080c 100%); }
+
+.wrapped-progress {
+  display: flex;
+  gap: 4px;
+  padding: 14px 16px 8px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 4;
+}
+.wp-bar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.wp-bar.done { background: rgba(255,255,255,0.85); }
+.wp-fill {
+  height: 100%;
+  background: rgba(255,255,255,0.9);
+  width: 0;
+  animation: wpFill linear forwards;
+}
+@keyframes wpFill { from { width: 0 } to { width: 100% } }
+
+.wrapped-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 8px;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 4;
+}
+.wrapped-player-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+.wrapped-skip {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 12px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wrapped-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 28px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.wrapped-tap-zone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 30%;
+  z-index: 3;
+  cursor: pointer;
+}
+.wrapped-tap-zone.left { left: 0; }
+.wrapped-tap-zone.right { right: 0; }
+
+.slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: slideIn 0.4s ease;
+}
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.slide-eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.slide-date {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+.slide-title {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 4px 0;
+}
+.slide-subtle {
+  font-size: 15px;
+  opacity: 0.75;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+.slide-detail {
+  font-size: 19px;
+  opacity: 0.9;
+  font-weight: 500;
+  line-height: 1.3;
+}
+.slide-big-label {
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  font-weight: 700;
+  margin-bottom: -6px;
+}
+.slide-graphic {
+  margin: 4px 0 8px;
+  opacity: 0.95;
+}
+.huge-number {
+  font-size: 128px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.vs-par-badge {
+  display: inline-block;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.15);
+  letter-spacing: 0.02em;
+}
+.vs-par-badge.under { background: rgba(155, 224, 140, 0.3); }
+.vs-par-badge.over { background: rgba(255, 130, 100, 0.25); }
+.pb-banner {
+  margin-top: 14px;
+  padding: 9px 20px;
+  background: #ffd24a;
+  color: #2a1f00;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  animation: popIn 0.6s 0.2s both;
+}
+
+.stat-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+.stat-num {
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.stat-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.halves-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+.half-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 18px 14px;
+  text-align: center;
+}
+.half-card.win { background: rgba(155, 224, 140, 0.25); }
+.half-label {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+}
+.half-num {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 4px 0;
+  font-variant-numeric: tabular-nums;
+}
+.half-sub {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.net-grid {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  flex-wrap: nowrap;
+}
+.score-pair {
+  background: rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 14px 18px;
+  text-align: center;
+  flex: 1;
+}
+.score-pair.primary {
+  background: rgba(255,255,255,0.95);
+  color: #1a1a1a;
+}
+.pair-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+}
+.score-pair.primary .pair-label { opacity: 0.5; }
+.pair-num {
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.pair-arrow {
+  font-size: 15px;
+  opacity: 0.7;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.persona-name {
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  margin: 8px 0;
+}
+
+.wrapped-action {
+  display: block;
+  margin-top: 12px;
+  padding: 16px 28px;
+  background: white;
+  color: #1a1a1a;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  min-width: 220px;
+}
+.wrapped-action.share { background: #ffd24a; color: #2a1f00; }
+.wrapped-action.ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Confetti */
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 101;
+  overflow: hidden;
+}
+.confetti {
+  position: absolute;
+  top: -20px;
+  width: 8px;
+  height: 14px;
+  border-radius: 1px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.85; }
+}
+
+/* Trigger button on player-detail card */
+.wrapped-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  background: linear-gradient(135deg, #7a3a96, #2d7a4a);
+  color: white;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: none;
+}
+.wrapped-trigger:active:not(:disabled) { opacity: 0.85; }
+
 /* ---------- Install modal ---------- */
 .modal-overlay {
   position: fixed;
@@ -1418,7 +1780,232 @@ function defaultState() {
 }
 
 // Transient UI state (not persisted)
-const ui = { menuOpen: false, installModalOpen: false };
+const ui = { menuOpen: false, installModalOpen: false, wrapped: null };
+
+const WRAPPED_SLIDE_MS = 5000;
+
+function openWrapped(playerId) {
+  ui.wrapped = { playerId, slideIndex: 0, timerId: null };
+  ui.menuOpen = false;
+  document.body.style.overflow = "hidden";
+  renderWrappedOverlay();
+  startWrappedTimer();
+}
+function closeWrapped() {
+  if (ui.wrapped && ui.wrapped.timerId) clearTimeout(ui.wrapped.timerId);
+  ui.wrapped = null;
+  document.body.style.overflow = "";
+  const root = document.getElementById("wrapped-root");
+  if (root) root.remove();
+}
+function nextSlide() {
+  if (!ui.wrapped) return;
+  const player = state.players.find(p => p.id === ui.wrapped.playerId);
+  if (!player) { closeWrapped(); return; }
+  const slides = buildSlideList(wrappedEngine(player, state.history));
+  if (ui.wrapped.slideIndex >= slides.length - 1) { closeWrapped(); return; }
+  ui.wrapped.slideIndex++;
+  renderWrappedOverlay();
+  startWrappedTimer();
+}
+function prevSlide() {
+  if (!ui.wrapped || ui.wrapped.slideIndex <= 0) return;
+  ui.wrapped.slideIndex--;
+  renderWrappedOverlay();
+  startWrappedTimer();
+}
+function startWrappedTimer() {
+  if (!ui.wrapped) return;
+  if (ui.wrapped.timerId) clearTimeout(ui.wrapped.timerId);
+  ui.wrapped.timerId = setTimeout(() => nextSlide(), WRAPPED_SLIDE_MS);
+}
+
+function spawnConfetti() {
+  if (document.querySelector(".confetti-layer")) return;
+  const layer = el("div", "confetti-layer");
+  const colors = ["#ffd24a", "#ff7864", "#9be08c", "#7eb8ff", "#ff9be0", "#ffffff"];
+  for (let i = 0; i < 50; i++) {
+    const p = el("div", "confetti");
+    p.style.background = colors[i % colors.length];
+    p.style.left = (Math.random() * 100) + "%";
+    p.style.animationDelay = (Math.random() * 0.5) + "s";
+    p.style.animationDuration = (1.6 + Math.random() * 1.0) + "s";
+    p.style.transform = "rotate(" + (Math.random() * 360) + "deg)";
+    layer.appendChild(p);
+  }
+  document.body.appendChild(layer);
+  setTimeout(() => layer.remove(), 3500);
+}
+
+// ----- Wrapped engine -----
+function wrappedEngine(player, history) {
+  const totalPar9 = totalPar();
+
+  const playedDiffs = []; // {hole, par, score, diff}
+  let total = 0;
+  let dnfCount = 0;
+  const stats = { birdies: 0, pars: 0, bogeys: 0, doubles: 0, dnf: 0 };
+  for (let i = 0; i < 9; i++) {
+    const s = player.scores[i];
+    if (s.dnf) { dnfCount++; stats.dnf++; continue; }
+    if (!s.entered) continue;
+    total += s.value;
+    const diff = s.value - PARS[i];
+    playedDiffs.push({ hole: i + 1, par: PARS[i], score: s.value, diff });
+    if (diff <= -1) stats.birdies++;
+    else if (diff === 0) stats.pars++;
+    else if (diff === 1) stats.bogeys++;
+    else stats.doubles++;
+  }
+  const vsPar = total - playedDiffs.reduce((a, x) => a + x.par, 0);
+
+  // PB & avg from history
+  const playerName = player.name;
+  const pastFinished = (history || []).map(r => {
+    const p = (r.players || []).find(pp => pp.name === playerName);
+    if (!p) return null;
+    let s = 0, ok = true;
+    for (let i = 0; i < 9; i++) {
+      const sc = p.scores[i];
+      if (sc.dnf || !sc.entered) { ok = false; break; }
+      s += sc.value;
+    }
+    return ok ? { sum: s, vsPar: s - totalPar9 } : null;
+  }).filter(Boolean);
+
+  let isPB = false, prevBest = null, avgVsPar = null, avgVsParDiff = null;
+  const isCompleteRound = playedDiffs.length === 9 && dnfCount === 0;
+  if (pastFinished.length > 0) {
+    prevBest = Math.min.apply(null, pastFinished.map(r => r.sum));
+    avgVsPar = pastFinished.reduce((a, r) => a + r.vsPar, 0) / pastFinished.length;
+    if (isCompleteRound) {
+      isPB = total < prevBest;
+      avgVsParDiff = vsPar - avgVsPar;
+    }
+  }
+
+  // Hero / villain
+  let hero = null, villain = null;
+  if (playedDiffs.length > 0) {
+    hero = playedDiffs.reduce((b, x) => x.diff < b.diff ? x : b);
+    villain = playedDiffs.reduce((w, x) => x.diff > w.diff ? x : w);
+  }
+  const villainWorthShowing = !!(villain && hero && villain.hole !== hero.hole && villain.diff > 0);
+
+  // Longest no-bogey streak (par or better, consecutive in played order)
+  let longestNoBogey = 0, cur = 0;
+  for (const d of playedDiffs) {
+    if (d.diff <= 0) { cur++; if (cur > longestNoBogey) longestNoBogey = cur; }
+    else cur = 0;
+  }
+
+  // 9-hål: front = hål 1-4, back = hål 6-9 (hål 5 är mitten)
+  const front = computeHalf(player, [0,1,2,3]);
+  const back = computeHalf(player, [5,6,7,8]);
+
+  // Net
+  let netInfo = null;
+  if (player.hcp != null && isCompleteRound) {
+    const ph9 = playingHcp9(player.hcp, player.gender || "herr", player.tee || 1);
+    if (ph9 != null) {
+      const netScore = total - ph9;
+      netInfo = {
+        gross: total,
+        playingHcp: ph9,
+        netScore,
+        vsParNet: netScore - totalPar9,
+        underPar: netScore < totalPar9,
+      };
+    }
+  }
+
+  // Persona
+  const persona = classifyPersona(playedDiffs.map(d => d.diff), front.vsPar, back.vsPar);
+
+  return {
+    date: Date.now(),
+    playerName,
+    hcp: player.hcp,
+    isJunior: !!player.isJunior,
+    total,
+    par: playedDiffs.reduce((a, x) => a + x.par, 0),
+    coursePar: totalPar9,
+    vsPar,
+    holesPlayed: playedDiffs.length,
+    dnfCount,
+    isCompleteRound,
+    isPB,
+    prevBest,
+    avgVsPar,
+    avgVsParDiff,
+    hero,
+    villain,
+    villainWorthShowing,
+    stats,
+    longestNoBogey,
+    front,
+    back,
+    net: netInfo,
+    persona,
+  };
+}
+function computeHalf(player, indices) {
+  let sum = 0, par = 0, played = 0;
+  for (const i of indices) {
+    const s = player.scores[i];
+    if (s.dnf || !s.entered) continue;
+    sum += s.value;
+    par += PARS[i];
+    played++;
+  }
+  return { sum, par, vsPar: sum - par, played };
+}
+function classifyPersona(diffs, frontVsPar, backVsPar) {
+  const n = diffs.length;
+  if (n < 3) return { name: "Mystisk", desc: "För få hål för att läsa av dig." };
+
+  const mean = diffs.reduce((a, b) => a + b, 0) / n;
+  const variance = diffs.reduce((a, b) => a + (b - mean) ** 2, 0) / n;
+  const stdDev = Math.sqrt(variance);
+  const minD = Math.min.apply(null, diffs);
+  const maxD = Math.max.apply(null, diffs);
+
+  // Den envisa: 3+ bogey-eller-värre i rad, sen återhämtning (par eller bättre)
+  let stubbornStreak = 0, foundRecovery = false;
+  for (let i = 0; i <= diffs.length - 4; i++) {
+    let s = 0;
+    while (i + s < diffs.length && diffs[i + s] >= 1) s++;
+    if (s >= 3 && i + s < diffs.length && diffs[i + s] <= 0) {
+      stubbornStreak = Math.max(stubbornStreak, s);
+      foundRecovery = true;
+    }
+  }
+  if (foundRecovery && stubbornStreak >= 3) {
+    return { name: "Den envisa", desc: "Du hamnade i diket — och kämpade dig upp igen." };
+  }
+
+  // Kometen
+  const fbDiff = Math.abs(frontVsPar - backVsPar);
+  if (fbDiff >= 3) {
+    return {
+      name: "Kometen",
+      desc: frontVsPar > backVsPar ? "Du sparade det bästa till sist." : "Stark start, tuff avslutning.",
+    };
+  }
+
+  // Berg-och-dalbanan
+  if (stdDev >= 1.3 && minD <= -1 && maxD >= 2) {
+    return { name: "Berg-och-dalbanan", desc: "Höjder och dalar — det blev aldrig tråkigt." };
+  }
+
+  // Maratonlöparen
+  if (maxD - minD <= 2 && Math.abs(maxD) <= 1 && Math.abs(minD) <= 1) {
+    return { name: "Maratonlöparen", desc: "Jämn och stabil — du höll tempot hela vägen." };
+  }
+
+  // Default
+  return { name: "Försiktiga generalen", desc: "Få extremer, mycket par och bogey. Lugnt och säkert." };
+}
 
 // Install prompt (Android Chrome captures this; iOS Safari does not fire it)
 let deferredInstallPrompt = null;
@@ -1884,6 +2471,267 @@ function render() {
 
   renderDrawer();
   renderInstallModal();
+}
+
+// ----- Slide list builder -----
+function buildSlideList(d) {
+  const slides = [];
+  slides.push({ name: "opening", render: () => renderSlideOpening(d) });
+  if (d.holesPlayed > 0) slides.push({ name: "score", render: () => renderSlideScore(d) });
+  if (d.hero) slides.push({ name: "hero", render: () => renderSlideHero(d) });
+  if (d.villainWorthShowing) slides.push({ name: "villain", render: () => renderSlideVillain(d) });
+  if (d.holesPlayed > 0) slides.push({ name: "stats", render: () => renderSlideStats(d) });
+  if (d.front.played > 0 && d.back.played > 0) {
+    slides.push({ name: "frontback", render: () => renderSlideFrontBack(d) });
+  }
+  if (d.net) slides.push({ name: "net", render: () => renderSlideNet(d) });
+  if (d.holesPlayed >= 3) slides.push({ name: "persona", render: () => renderSlidePersona(d) });
+  slides.push({ name: "closing", render: () => renderSlideClosing(d) });
+  return slides;
+}
+
+function renderSlideOpening(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Round Wrapped"));
+  w.appendChild(el("div", "slide-date", formatDateLong(d.date)));
+  const flag = el("div", "slide-graphic");
+  flag.innerHTML = '<svg viewBox="0 0 100 130" width="110" height="143" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="32" y1="14" x2="32" y2="112"/><path d="M32 14 L82 26 L66 36 L82 46 L32 58 Z" fill="white" stroke="none"/><circle cx="55" cy="108" r="8" fill="white" stroke="none"/></svg>';
+  w.appendChild(flag);
+  w.appendChild(el("div", "slide-title", d.playerName));
+  if (d.hcp != null) {
+    w.appendChild(el("div", "slide-subtle", "HCP " + formatHcp(d.hcp) + (d.isJunior ? " · Junior" : "")));
+  }
+  return w;
+}
+
+function renderSlideScore(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Totalsumman"));
+  w.appendChild(Object.assign(el("div", "huge-number"), { textContent: String(d.total) }));
+  const badge = el("div", "vs-par-badge");
+  if (d.vsPar === 0) {
+    badge.textContent = "På par";
+    badge.classList.add("under");
+  } else {
+    badge.textContent = (d.vsPar > 0 ? "+" + d.vsPar : String(d.vsPar)) + " mot par";
+    badge.classList.add(d.vsPar < 0 ? "under" : "over");
+  }
+  w.appendChild(badge);
+  if (d.isPB) {
+    w.appendChild(Object.assign(el("div", "pb-banner"), { textContent: "Nytt personbästa" }));
+    spawnConfetti();
+  }
+  if (d.avgVsParDiff != null && Math.abs(d.avgVsParDiff) >= 1) {
+    const slag = Math.round(Math.abs(d.avgVsParDiff));
+    const txt = d.avgVsParDiff < 0
+      ? slag + " slag bättre än ditt snitt"
+      : slag + " slag över ditt snitt";
+    w.appendChild(Object.assign(el("div", "slide-subtle"), { textContent: txt }));
+  }
+  return w;
+}
+
+function renderSlideHero(d) {
+  const w = el("div", "slide-content");
+  const heroic = d.hero.diff <= 0;
+  w.appendChild(el("div", "slide-eyebrow", heroic ? "Hjälten" : "Bästa kampen"));
+  w.appendChild(el("div", "slide-big-label", "Hål"));
+  w.appendChild(Object.assign(el("div", "huge-number"), { textContent: String(d.hero.hole) }));
+  w.appendChild(Object.assign(el("div", "slide-detail"), {
+    textContent: "Par " + d.hero.par + " — du gick på " + d.hero.score,
+  }));
+  if (d.hero.diff <= -2) {
+    w.appendChild(el("div", "slide-subtle", "Eagle eller bättre — knäppt bra."));
+  } else if (d.hero.diff === -1) {
+    const txt = d.stats.birdies === 1 ? "Din enda birdie idag" : "En av " + d.stats.birdies + " birdies";
+    w.appendChild(Object.assign(el("div", "slide-subtle"), { textContent: txt }));
+  } else if (d.hero.diff === 0) {
+    w.appendChild(el("div", "slide-subtle", "En solid par."));
+  } else {
+    w.appendChild(el("div", "slide-subtle", "Du kämpade hårdast här."));
+  }
+  return w;
+}
+
+function renderSlideVillain(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Skurken"));
+  w.appendChild(Object.assign(el("div", "slide-title"), {
+    textContent: "Vi pratar inte om hål " + d.villain.hole,
+  }));
+  w.appendChild(Object.assign(el("div", "slide-detail"), {
+    textContent: "Par " + d.villain.par + " — du gick på " + d.villain.score,
+  }));
+  w.appendChild(el("div", "slide-subtle", "Det händer alla. Vidare."));
+  return w;
+}
+
+function renderSlideStats(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "I siffror"));
+  const grid = el("div", "stat-2x2");
+  const items = [
+    { num: d.stats.birdies, label: "Birdies" },
+    { num: d.stats.pars, label: "Pars" },
+    { num: d.stats.bogeys, label: "Bogeys" },
+    { num: d.stats.doubles + d.stats.dnf, label: d.stats.dnf > 0 ? "Dbl+/X" : "Dbl+" },
+  ];
+  items.forEach(it => {
+    const c = el("div", "stat-card");
+    c.appendChild(Object.assign(el("div", "stat-num"), { textContent: String(it.num) }));
+    c.appendChild(Object.assign(el("div", "stat-label"), { textContent: it.label }));
+    grid.appendChild(c);
+  });
+  w.appendChild(grid);
+  if (d.longestNoBogey >= 2) {
+    w.appendChild(Object.assign(el("div", "slide-subtle"), {
+      textContent: "Bästa streak: " + d.longestNoBogey + " hål utan bogey",
+    }));
+  }
+  return w;
+}
+
+function renderSlideFrontBack(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Öppning vs avslutning"));
+  const grid = el("div", "halves-grid");
+
+  const frontWins = d.front.vsPar < d.back.vsPar;
+  const backWins = d.back.vsPar < d.front.vsPar;
+
+  const f = el("div", "half-card" + (frontWins ? " win" : ""));
+  f.appendChild(el("div", "half-label", "Hål 1–4"));
+  f.appendChild(Object.assign(el("div", "half-num"), { textContent: vsParText(d.front.vsPar) }));
+  f.appendChild(Object.assign(el("div", "half-sub"), { textContent: d.front.sum + " slag" }));
+  grid.appendChild(f);
+
+  const b = el("div", "half-card" + (backWins ? " win" : ""));
+  b.appendChild(el("div", "half-label", "Hål 6–9"));
+  b.appendChild(Object.assign(el("div", "half-num"), { textContent: vsParText(d.back.vsPar) }));
+  b.appendChild(Object.assign(el("div", "half-sub"), { textContent: d.back.sum + " slag" }));
+  grid.appendChild(b);
+
+  w.appendChild(grid);
+
+  const diff = d.back.vsPar - d.front.vsPar;
+  let msg = "Jämn rytm hela vägen.";
+  if (diff < -1) msg = "Du sparade det bästa till sist.";
+  else if (diff > 1) msg = "Stark start, tuff avslutning.";
+  w.appendChild(el("div", "slide-subtle", msg));
+  return w;
+}
+
+function renderSlideNet(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Med ditt handicap"));
+  const grid = el("div", "net-grid");
+
+  const brutto = el("div", "score-pair");
+  brutto.appendChild(el("div", "pair-label", "Brutto"));
+  brutto.appendChild(Object.assign(el("div", "pair-num"), { textContent: String(d.net.gross) }));
+  grid.appendChild(brutto);
+
+  grid.appendChild(Object.assign(el("div", "pair-arrow"), { textContent: "−" + d.net.playingHcp }));
+
+  const netto = el("div", "score-pair primary");
+  netto.appendChild(el("div", "pair-label", "Netto"));
+  netto.appendChild(Object.assign(el("div", "pair-num"), { textContent: String(d.net.netScore) }));
+  grid.appendChild(netto);
+
+  w.appendChild(grid);
+
+  if (d.net.underPar) {
+    w.appendChild(Object.assign(el("div", "pb-banner"), { textContent: "Under par netto!" }));
+    spawnConfetti();
+  } else {
+    w.appendChild(Object.assign(el("div", "slide-subtle"), {
+      textContent: vsParText(d.net.vsParNet) + " mot par",
+    }));
+  }
+  return w;
+}
+
+function renderSlidePersona(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Din persona"));
+  w.appendChild(el("div", "persona-name", d.persona.name));
+  w.appendChild(el("div", "slide-detail", d.persona.desc));
+  return w;
+}
+
+function renderSlideClosing(d) {
+  const w = el("div", "slide-content");
+  w.appendChild(el("div", "slide-eyebrow", "Tack för rundan"));
+  w.appendChild(el("div", "slide-title", d.playerName));
+  w.appendChild(el("div", "slide-subtle", formatDateLong(d.date)));
+  const share = el("button", "wrapped-action share", "Dela rundan");
+  share.onclick = () => {
+    if (ui.wrapped && ui.wrapped.timerId) clearTimeout(ui.wrapped.timerId);
+    shareViaEmail(state.players, Date.now());
+  };
+  w.appendChild(share);
+  const close = el("button", "wrapped-action ghost", "Stäng");
+  close.onclick = closeWrapped;
+  w.appendChild(close);
+  return w;
+}
+
+function renderWrappedOverlay() {
+  if (!ui.wrapped) {
+    const existing = document.getElementById("wrapped-root");
+    if (existing) existing.remove();
+    return;
+  }
+  const player = state.players.find(p => p.id === ui.wrapped.playerId);
+  if (!player) { closeWrapped(); return; }
+  const data = wrappedEngine(player, state.history);
+  const slides = buildSlideList(data);
+  const idx = Math.max(0, Math.min(ui.wrapped.slideIndex, slides.length - 1));
+  ui.wrapped.slideIndex = idx;
+  const slide = slides[idx];
+
+  let root = document.getElementById("wrapped-root");
+  if (!root) {
+    root = el("div", "wrapped-overlay");
+    root.id = "wrapped-root";
+    document.body.appendChild(root);
+  }
+  root.className = "wrapped-overlay theme-" + slide.name;
+  root.innerHTML = "";
+
+  // Progress bars
+  const progress = el("div", "wrapped-progress");
+  slides.forEach((s, i) => {
+    const bar = el("div", "wp-bar" + (i < idx ? " done" : ""));
+    if (i === idx) {
+      const fill = el("div", "wp-fill");
+      fill.style.animationDuration = WRAPPED_SLIDE_MS + "ms";
+      bar.appendChild(fill);
+    } else if (i > idx) {
+      // empty
+    }
+    progress.appendChild(bar);
+  });
+  root.appendChild(progress);
+
+  // Top: player name + skip
+  const top = el("div", "wrapped-top");
+  top.appendChild(Object.assign(el("div", "wrapped-player-name"), { textContent: player.name }));
+  const skip = el("button", "wrapped-skip", "Hoppa över");
+  skip.onclick = closeWrapped;
+  top.appendChild(skip);
+  root.appendChild(top);
+
+  // Stage with slide content + tap zones
+  const stage = el("div", "wrapped-stage");
+  const leftZone = el("div", "wrapped-tap-zone left");
+  leftZone.onclick = prevSlide;
+  const rightZone = el("div", "wrapped-tap-zone right");
+  rightZone.onclick = nextSlide;
+  stage.appendChild(leftZone);
+  stage.appendChild(rightZone);
+  stage.appendChild(slide.render());
+  root.appendChild(stage);
 }
 
 function renderInstallModal() {
@@ -2869,6 +3717,12 @@ function renderPlayerDetail(p) {
     wrap.appendChild(extras);
   }
 
+  // Round Wrapped trigger
+  const wrappedBtn = el("button", "wrapped-trigger");
+  wrappedBtn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L14 9 L21 10 L16 14 L18 21 L12 17 L6 21 L8 14 L3 10 L10 9 Z"/></svg><span>Visa Round Wrapped</span>';
+  wrappedBtn.onclick = () => openWrapped(p.id);
+  wrap.appendChild(wrappedBtn);
+
   // HCP-rad
   if (p.hcp != null) {
     const vh = vsHcpResult(p);
@@ -2909,6 +3763,12 @@ function formatDateLong(ts) {
 }
 
 document.addEventListener("keydown", e => {
+  if (ui.wrapped) {
+    if (e.key === "Escape") { closeWrapped(); return; }
+    if (e.key === "ArrowRight") { nextSlide(); return; }
+    if (e.key === "ArrowLeft") { prevSlide(); return; }
+    return;
+  }
   if (e.key !== "Escape") return;
   if (ui.installModalOpen) { ui.installModalOpen = false; render(); return; }
   if (ui.menuOpen) toggleMenu(false);
