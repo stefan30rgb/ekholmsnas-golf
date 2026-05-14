@@ -77,6 +77,9 @@ html, body {
   min-height: 100vh;
   overscroll-behavior: none;
   transition: background 0.2s ease, color 0.2s ease;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 button {
   font-family: inherit;
@@ -3953,6 +3956,17 @@ function formatDateLong(ts) {
   const mm = String(d.getMinutes()).padStart(2, "0");
   return day + " " + mo + " " + yr + " · " + hh + ":" + mm;
 }
+
+// Blockera iOS pinch och double-tap-zoom
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("gesturechange", e => e.preventDefault());
+document.addEventListener("gestureend", e => e.preventDefault());
+let lastTapTime = 0;
+document.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTapTime < 350) e.preventDefault();
+  lastTapTime = now;
+}, { passive: false });
 
 document.addEventListener("keydown", e => {
   if (ui.wrapped) {
