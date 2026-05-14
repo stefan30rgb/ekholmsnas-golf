@@ -865,6 +865,55 @@ button:disabled { cursor: not-allowed; }
   box-shadow: none;
   padding: 0;
 }
+/* ---------- Install modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.18s ease;
+}
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+.modal {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 24px 22px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 -8px 28px rgba(0,0,0,0.3);
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px) } to { transform: translateY(0) } }
+.modal h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.modal .modal-sub {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.modal .instructions {
+  margin: 0 0 18px;
+  padding-left: 22px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.modal .instructions li { margin-bottom: 6px; }
+.modal .icon-hint {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -4px;
+  margin: 0 2px;
+}
 .setup-manage-link {
   display: block;
   width: 100%;
@@ -1369,7 +1418,48 @@ function defaultState() {
 }
 
 // Transient UI state (not persisted)
-const ui = { menuOpen: false };
+const ui = { menuOpen: false, installModalOpen: false };
+
+// Install prompt (Android Chrome captures this; iOS Safari does not fire it)
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  render();
+});
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  ui.installModalOpen = false;
+  render();
+});
+
+function isStandaloneMode() {
+  return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+         window.navigator.standalone === true;
+}
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent || "") && !window.MSStream;
+}
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent || "");
+}
+
+async function triggerInstall() {
+  ui.menuOpen = false;
+  if (deferredInstallPrompt) {
+    try {
+      deferredInstallPrompt.prompt();
+      const result = await deferredInstallPrompt.userChoice;
+      if (result && result.outcome === "accepted") {
+        deferredInstallPrompt = null;
+      }
+    } catch (e) { /* fall through to instructions */ }
+    render();
+    return;
+  }
+  ui.installModalOpen = true;
+  render();
+}
 
 let state = loadState();
 let weather = loadWeather();
@@ -1793,6 +1883,54 @@ function render() {
   else app.appendChild(renderSetup());
 
   renderDrawer();
+  renderInstallModal();
+}
+
+function renderInstallModal() {
+  const existing = document.getElementById("install-modal-root");
+  if (existing) existing.remove();
+  if (!ui.installModalOpen) return;
+
+  const root = el("div", "modal-overlay");
+  root.id = "install-modal-root";
+  root.onclick = () => { ui.installModalOpen = false; render(); };
+
+  const modal = el("div", "modal");
+  modal.onclick = e => e.stopPropagation();
+  modal.appendChild(el("h3", "", "Lägg till på hemskärmen"));
+
+  if (isIOS()) {
+    modal.appendChild(Object.assign(el("p", "modal-sub"), { textContent: "I Safari på iPhone/iPad:" }));
+    const ol = el("ol", "instructions");
+    ol.innerHTML =
+      '<li>Tryck på <span class="icon-hint">' + svgShareIOS() + '</span> dela-ikonen längst ner i Safari.</li>' +
+      '<li>Scrolla och välj <strong>Lägg till på hemskärmen</strong>.</li>' +
+      '<li>Tryck <strong>Lägg till</strong>.</li>';
+    modal.appendChild(ol);
+  } else if (isAndroid()) {
+    modal.appendChild(Object.assign(el("p", "modal-sub"), { textContent: "I Chrome på Android:" }));
+    const ol = el("ol", "instructions");
+    ol.innerHTML =
+      '<li>Tryck på menyn (tre prickar uppe till höger).</li>' +
+      '<li>Välj <strong>Installera app</strong> eller <strong>Lägg till på startskärmen</strong>.</li>' +
+      '<li>Bekräfta med <strong>Installera</strong>.</li>';
+    modal.appendChild(ol);
+  } else {
+    modal.appendChild(Object.assign(el("p", "modal-sub"), { textContent: "I webbläsaren:" }));
+    const ol = el("ol", "instructions");
+    ol.innerHTML =
+      '<li>Öppna webbläsarens meny.</li>' +
+      '<li>Välj <strong>Installera app</strong> eller <strong>Lägg till på hemskärmen</strong>.</li>';
+    modal.appendChild(ol);
+  }
+
+  const close = el("button", "primary-btn", "OK");
+  close.style.marginTop = "8px";
+  close.onclick = () => { ui.installModalOpen = false; render(); };
+  modal.appendChild(close);
+
+  root.appendChild(modal);
+  document.body.appendChild(root);
 }
 
 function renderDrawer() {
@@ -1855,6 +1993,18 @@ function renderDrawer() {
   histItem.onclick = goHistory;
   inner.appendChild(histItem);
 
+  // Install / add to home screen — only when not already installed
+  if (!isStandaloneMode()) {
+    const installItem = el("button", "drawer-item");
+    installItem.append(
+      iconSpan(svgAddToScreen()),
+      el("span", "label", "Lägg till på hemskärmen"),
+      el("span", "meta", deferredInstallPrompt ? "Installera" : isIOS() ? "Visa hur" : "Visa hur")
+    );
+    installItem.onclick = triggerInstall;
+    inner.appendChild(installItem);
+  }
+
   // Round actions
   if (state.players.length > 0) {
     inner.appendChild(el("div", "drawer-section", "Aktuell runda"));
@@ -1903,6 +2053,12 @@ function svgTrash() {
 }
 function svgMenu() {
   return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+}
+function svgAddToScreen() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2.5"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="12" y1="9" x2="12" y2="15"/></svg>';
+}
+function svgShareIOS() {
+  return '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 3 L12 15"/><polyline points="8 7 12 3 16 7"/><path d="M5 12 L5 20 L19 20 L19 12"/></svg>';
 }
 function svgUsers() {
   return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c0-3.3 2.7-5 6-5s6 1.7 6 5"/><circle cx="17" cy="9" r="2.2"/><path d="M16 14.5c2.5 0 5 1.3 5 4.5"/></svg>';
@@ -2753,7 +2909,9 @@ function formatDateLong(ts) {
 }
 
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && ui.menuOpen) toggleMenu(false);
+  if (e.key !== "Escape") return;
+  if (ui.installModalOpen) { ui.installModalOpen = false; render(); return; }
+  if (ui.menuOpen) toggleMenu(false);
 });
 
 render();
