@@ -865,6 +865,105 @@ button:disabled { cursor: not-allowed; }
   box-shadow: none;
   padding: 0;
 }
+/* ---------- Splash screen ---------- */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background:
+    radial-gradient(ellipse at top, rgba(98, 178, 122, 0.45), transparent 60%),
+    linear-gradient(180deg, #1f6b3f 0%, #14502e 50%, #0a2818 100%);
+  color: white;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  padding: 24px;
+  text-align: center;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.splash-screen.dismissing {
+  animation: splashOut 0.45s ease forwards;
+  pointer-events: none;
+}
+@keyframes splashOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(1.06); }
+}
+.splash-bg-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+.splash-icon-wrap {
+  position: relative;
+  animation: splashIconIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes splashIconIn {
+  from { transform: translateY(24px) scale(0.82); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.splash-icon-wrap .breathe {
+  animation: splashBreathe 3.4s 0.7s ease-in-out infinite;
+}
+@keyframes splashBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.025); }
+}
+.splash-icon {
+  width: min(74vw, 320px);
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 30px 50px rgba(0, 40, 16, 0.55))
+          drop-shadow(0 10px 16px rgba(0, 20, 8, 0.4));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.splash-title {
+  margin-top: 36px;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  animation: splashTextIn 0.5s 0.25s ease both;
+}
+.splash-sub {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.78;
+  letter-spacing: 0.04em;
+  animation: splashTextIn 0.5s 0.4s ease both;
+}
+.splash-hint {
+  position: absolute;
+  bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 36px));
+  font-size: 12px;
+  opacity: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  animation: splashHintIn 0.5s 0.8s ease forwards, splashHintBob 2.2s 1.4s ease-in-out infinite;
+}
+@keyframes splashTextIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 0.8; transform: translateY(0); }
+}
+@keyframes splashHintIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 0.55; transform: translateY(0); }
+}
+@keyframes splashHintBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 /* ---------- Round Wrapped overlay ---------- */
 .wrapped-overlay {
   position: fixed;
@@ -2487,6 +2586,56 @@ function render() {
   renderEndRoundModal();
 }
 
+function renderSplash() {
+  const existing = document.getElementById("splash-root");
+  if (existing) existing.remove();
+
+  const root = el("div", "splash-screen");
+  root.id = "splash-root";
+
+  // Background ambient dots
+  for (let i = 0; i < 6; i++) {
+    const dot = el("div", "splash-bg-dot");
+    const size = 60 + Math.random() * 180;
+    dot.style.width = size + "px";
+    dot.style.height = size + "px";
+    dot.style.left = Math.random() * 100 + "%";
+    dot.style.top = Math.random() * 100 + "%";
+    root.appendChild(dot);
+  }
+
+  const iconWrap = el("div", "splash-icon-wrap");
+  const breathe = el("div", "breathe");
+  const icon = el("img", "splash-icon");
+  icon.src = "splash.png";
+  icon.alt = "Ekholmsnäs Golf";
+  icon.draggable = false;
+  icon.onerror = () => {
+    // Fallback om splash.png saknas — visa en enkel SVG i stället
+    breathe.innerHTML = '<svg viewBox="0 0 200 200" width="240" height="240" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><line x1="80" y1="30" x2="80" y2="160"/><path d="M80 30 L150 50 L130 65 L150 80 L80 100 Z" fill="white" stroke="none"/><circle cx="115" cy="155" r="14" fill="white" stroke="none"/></svg>';
+  };
+  breathe.appendChild(icon);
+  iconWrap.appendChild(breathe);
+  root.appendChild(iconWrap);
+
+  root.appendChild(el("div", "splash-title", "Ekholmsnäs"));
+  root.appendChild(el("div", "splash-sub", "Golf · 9 hål"));
+  root.appendChild(el("div", "splash-hint", "Tryck för att börja"));
+
+  const dismiss = () => {
+    if (root.classList.contains("dismissing")) return;
+    root.classList.add("dismissing");
+    setTimeout(() => {
+      const r = document.getElementById("splash-root");
+      if (r) r.remove();
+    }, 450);
+  };
+  root.addEventListener("click", dismiss);
+  root.addEventListener("touchstart", dismiss, { passive: true });
+
+  document.body.appendChild(root);
+}
+
 function renderEndRoundModal() {
   const existing = document.getElementById("end-round-modal-root");
   if (existing) existing.remove();
@@ -3819,6 +3968,7 @@ document.addEventListener("keydown", e => {
 });
 
 render();
+renderSplash();
 fetchWeather();
 setInterval(() => fetchWeather(false), 5 * 60 * 1000);
 document.addEventListener("visibilitychange", () => {
