@@ -7,6 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
+<link rel="preload" href="splash.png" as="image" fetchpriority="high">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -921,13 +922,17 @@ button:disabled { cursor: not-allowed; }
 }
 .splash-icon {
   width: min(74vw, 320px);
+  aspect-ratio: 720 / 612;
   height: auto;
   display: block;
   filter: drop-shadow(0 30px 50px rgba(0, 40, 16, 0.55))
           drop-shadow(0 10px 16px rgba(0, 20, 8, 0.4));
   user-select: none;
   -webkit-user-drag: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+.splash-icon.loaded { opacity: 1; }
 .splash-title {
   margin-top: 36px;
   font-size: 36px;
@@ -2605,9 +2610,13 @@ function renderSplash() {
   const iconWrap = el("div", "splash-icon-wrap");
   const breathe = el("div", "breathe");
   const icon = el("img", "splash-icon");
-  icon.src = "splash.png";
-  icon.alt = "Ekholmsnäs Golf";
+  icon.alt = "";
   icon.draggable = false;
+  icon.decoding = "async";
+  icon.fetchPriority = "high";
+  icon.onload = () => icon.classList.add("loaded");
+  icon.src = "splash.png";
+  if (icon.complete && icon.naturalWidth > 0) icon.classList.add("loaded");
   icon.onerror = () => {
     // Fallback om splash.png saknas — visa en enkel SVG i stället
     breathe.innerHTML = '<svg viewBox="0 0 200 200" width="240" height="240" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><line x1="80" y1="30" x2="80" y2="160"/><path d="M80 30 L150 50 L130 65 L150 80 L80 100 Z" fill="white" stroke="none"/><circle cx="115" cy="155" r="14" fill="white" stroke="none"/></svg>';
