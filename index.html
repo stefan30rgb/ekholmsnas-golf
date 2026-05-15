@@ -1334,6 +1334,111 @@ button:disabled { cursor: not-allowed; }
 }
 .wrapped-trigger:active:not(:disabled) { opacity: 0.85; }
 
+/* ---------- Hole overview modal ---------- */
+.hole-overview-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px auto 0;
+  padding: 8px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.hole-overview-btn .emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+.hole-overview-root .modal {
+  max-width: 460px;
+  padding: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, #1f4a32 0%, #0d2818 100%);
+  color: white;
+  position: relative;
+}
+.hole-overview-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  background: rgba(0,0,0,0.45);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  line-height: 1;
+  padding: 0;
+}
+.hole-overview-header {
+  padding: 18px 22px 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.hole-overview-header .h-number {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+}
+.hole-overview-header .h-title {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.hole-overview-image-wrap {
+  padding: 8px 16px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 56vh;
+}
+.hole-overview-image {
+  max-width: 100%;
+  max-height: 50vh;
+  display: block;
+  filter: drop-shadow(0 12px 24px rgba(0, 30, 12, 0.6));
+}
+.hole-overview-facts {
+  padding: 8px 18px 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.fact-card {
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 12px 14px;
+  text-align: left;
+}
+.fact-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  font-weight: 700;
+}
+.fact-value {
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+  letter-spacing: -0.01em;
+}
+
 /* ---------- Install modal ---------- */
 .modal-overlay {
   position: fixed;
@@ -1784,6 +1889,18 @@ button:disabled { cursor: not-allowed; }
 "use strict";
 
 const PARS = [3, 3, 4, 4, 3, 3, 3, 3, 3];
+// Hål-metadata (meters, index). Lämna meters: null tills du fyller in.
+const HOLE_INFO = [
+  { meters: null, index: null }, // 1
+  { meters: null, index: null }, // 2
+  { meters: null, index: null }, // 3
+  { meters: null, index: null }, // 4
+  { meters: null, index: null }, // 5
+  { meters: null, index: null }, // 6
+  { meters: null, index: null }, // 7
+  { meters: null, index: null }, // 8
+  { meters: null, index: null }, // 9
+];
 const COURSE_NAME = "Ekholmsnäs";
 const DEFAULT_PLAYERS = ["Oskar", "Stefan", "Philip", "Thea"];
 const STORAGE_KEY = "ekholmsnas-golf-v1";
@@ -1887,7 +2004,7 @@ function defaultState() {
 }
 
 // Transient UI state (not persisted)
-const ui = { menuOpen: false, installModalOpen: false, endRoundModalOpen: false, wrapped: null };
+const ui = { menuOpen: false, installModalOpen: false, endRoundModalOpen: false, holeOverviewOpen: false, wrapped: null };
 
 function abortRound() {
   ui.endRoundModalOpen = false;
@@ -2587,6 +2704,74 @@ function render() {
   renderDrawer();
   renderInstallModal();
   renderEndRoundModal();
+  renderHoleOverviewModal();
+}
+
+function renderHoleOverviewModal() {
+  const existing = document.getElementById("hole-overview-root");
+  if (existing) existing.remove();
+  if (!ui.holeOverviewOpen) return;
+  if (state.players.length === 0) return;
+
+  const root = el("div", "modal-overlay hole-overview-root");
+  root.id = "hole-overview-root";
+  root.onclick = () => { ui.holeOverviewOpen = false; render(); };
+
+  const modal = el("div", "modal");
+  modal.onclick = e => e.stopPropagation();
+
+  const close = el("button", "hole-overview-close", "×");
+  close.setAttribute("aria-label", "Stäng");
+  close.onclick = () => { ui.holeOverviewOpen = false; render(); };
+  modal.appendChild(close);
+
+  const h = state.currentHole;
+  const par = PARS[h];
+  const info = HOLE_INFO[h] || {};
+
+  const header = el("div", "hole-overview-header");
+  const left = el("div");
+  left.appendChild(Object.assign(el("div", "h-number"), { textContent: "Hål " + (h + 1) }));
+  left.appendChild(Object.assign(el("div", "h-title"), { textContent: "Par " + par }));
+  header.appendChild(left);
+  modal.appendChild(header);
+
+  const imgWrap = el("div", "hole-overview-image-wrap");
+  const img = el("img", "hole-overview-image");
+  img.src = "holes/hole-" + (h + 1) + ".webp";
+  img.alt = "";
+  img.draggable = false;
+  imgWrap.appendChild(img);
+  modal.appendChild(imgWrap);
+
+  const facts = el("div", "hole-overview-facts");
+
+  const f1 = el("div", "fact-card");
+  f1.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Hål" }));
+  f1.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(h + 1) + " / 9" }));
+  facts.appendChild(f1);
+
+  const f2 = el("div", "fact-card");
+  f2.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Par" }));
+  f2.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(par) }));
+  facts.appendChild(f2);
+
+  if (info.meters != null) {
+    const f3 = el("div", "fact-card");
+    f3.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Längd" }));
+    f3.appendChild(Object.assign(el("div", "fact-value"), { textContent: info.meters + " m" }));
+    facts.appendChild(f3);
+  }
+  if (info.index != null) {
+    const f4 = el("div", "fact-card");
+    f4.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Index" }));
+    f4.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(info.index) }));
+    facts.appendChild(f4);
+  }
+
+  modal.appendChild(facts);
+  root.appendChild(modal);
+  document.body.appendChild(root);
 }
 
 function renderSplash() {
@@ -3440,6 +3625,10 @@ function renderHole() {
     el("div", "hole-number", String(h + 1)),
     el("div", "hole-par", "Par " + par)
   );
+  const overviewBtn = el("button", "hole-overview-btn");
+  overviewBtn.innerHTML = '<span class="emoji">🗺️</span><span>Översikt</span>';
+  overviewBtn.onclick = () => { ui.holeOverviewOpen = true; render(); };
+  head.appendChild(overviewBtn);
   wrap.appendChild(head);
 
   state.players.forEach(p => wrap.appendChild(renderPlayerRow(p)));
@@ -3980,6 +4169,7 @@ document.addEventListener("keydown", e => {
     return;
   }
   if (e.key !== "Escape") return;
+  if (ui.holeOverviewOpen) { ui.holeOverviewOpen = false; render(); return; }
   if (ui.endRoundModalOpen) { ui.endRoundModalOpen = false; render(); return; }
   if (ui.installModalOpen) { ui.installModalOpen = false; render(); return; }
   if (ui.menuOpen) toggleMenu(false);
