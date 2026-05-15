@@ -97,8 +97,7 @@ button:disabled { cursor: not-allowed; }
 .app {
   max-width: 560px;
   margin: 0 auto;
-  padding: 16px;
-  padding-bottom: 48px;
+  padding: max(16px, env(safe-area-inset-top, 16px)) 16px max(48px, calc(env(safe-area-inset-bottom, 0px) + 32px));
 }
 
 .header {
@@ -1402,6 +1401,27 @@ button:disabled { cursor: not-allowed; }
   line-height: 1;
   padding: 0;
 }
+.hole-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  padding: 0;
+  backdrop-filter: blur(6px);
+}
+.hole-nav-btn.prev { left: 10px; }
+.hole-nav-btn.next { right: 10px; }
+.hole-nav-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+.hole-nav-btn svg { display: block; }
 .hole-overview-header {
   padding: 18px 22px 6px;
   display: flex;
@@ -1472,7 +1492,10 @@ button:disabled { cursor: not-allowed; }
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  padding: 16px;
+  padding:
+    max(16px, env(safe-area-inset-top, 16px))
+    16px
+    max(16px, env(safe-area-inset-bottom, 16px));
   animation: fadeIn 0.18s ease;
 }
 @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
@@ -2775,6 +2798,20 @@ function renderHoleOverviewModal() {
   close.setAttribute("aria-label", "Stäng");
   close.onclick = () => { ui.holeOverviewOpen = false; render(); };
   modal.appendChild(close);
+
+  const prevBtn = el("button", "hole-nav-btn prev");
+  prevBtn.setAttribute("aria-label", "Föregående hål");
+  prevBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  prevBtn.disabled = state.currentHole <= 0;
+  prevBtn.onclick = e => { e.stopPropagation(); if (state.currentHole > 0) { state.currentHole--; saveState(); render(); } };
+  modal.appendChild(prevBtn);
+
+  const nextBtn = el("button", "hole-nav-btn next");
+  nextBtn.setAttribute("aria-label", "Nästa hål");
+  nextBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  nextBtn.disabled = state.currentHole >= 8;
+  nextBtn.onclick = e => { e.stopPropagation(); if (state.currentHole < 8) { state.currentHole++; saveState(); render(); } };
+  modal.appendChild(nextBtn);
 
   const h = state.currentHole;
   const par = PARS[h];
