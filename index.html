@@ -2741,7 +2741,6 @@ function renderHoleOverviewModal() {
   const existing = document.getElementById("hole-overview-root");
   if (existing) existing.remove();
   if (!ui.holeOverviewOpen) return;
-  if (state.players.length === 0) return;
 
   const root = el("div", "modal-overlay hole-overview-root");
   root.id = "hole-overview-root";
@@ -3282,21 +3281,23 @@ function renderDrawer() {
     inner.appendChild(installItem);
   }
 
+  // Banöversikt — alltid synlig
+  const mapItem = el("button", "drawer-item");
+  mapItem.append(
+    iconSpan(svgMap()),
+    el("span", "label", "Banöversikt"),
+    el("span", "meta", "9 hål")
+  );
+  mapItem.onclick = () => {
+    ui.menuOpen = false;
+    ui.holeOverviewOpen = true;
+    render();
+  };
+  inner.appendChild(mapItem);
+
   // Round actions
   if (state.players.length > 0) {
     inner.appendChild(el("div", "drawer-section", "Aktuell runda"));
-
-    const mapItem = el("button", "drawer-item");
-    mapItem.append(
-      iconSpan(svgMap()),
-      el("span", "label", "Översikt över hål " + (state.currentHole + 1))
-    );
-    mapItem.onclick = () => {
-      ui.menuOpen = false;
-      ui.holeOverviewOpen = true;
-      render();
-    };
-    inner.appendChild(mapItem);
 
     const endItem = el("button", "drawer-item");
     endItem.append(
