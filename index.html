@@ -3625,10 +3625,10 @@ function renderHole() {
     el("div", "hole-number", String(h + 1)),
     el("div", "hole-par", "Par " + par)
   );
-  const overviewBtn = el("button", "hole-overview-btn");
-  overviewBtn.innerHTML = '<span class="emoji">🗺️</span><span>Översikt</span>';
-  overviewBtn.onclick = () => { ui.holeOverviewOpen = true; render(); };
-  head.appendChild(overviewBtn);
+  const holeMapBtn = el("button", "hole-overview-btn");
+  holeMapBtn.innerHTML = '<span class="emoji">🗺️</span><span>Översikt</span>';
+  holeMapBtn.onclick = () => { ui.holeOverviewOpen = true; render(); };
+  head.appendChild(holeMapBtn);
   wrap.appendChild(head);
 
   state.players.forEach(p => wrap.appendChild(renderPlayerRow(p)));
