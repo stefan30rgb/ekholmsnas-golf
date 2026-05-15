@@ -1442,6 +1442,7 @@ button:disabled { cursor: not-allowed; }
   line-height: 1;
 }
 .hole-overview-image-wrap {
+  position: relative;
   padding: 4px 20px 8px;
   display: flex;
   justify-content: center;
@@ -2799,20 +2800,6 @@ function renderHoleOverviewModal() {
   close.onclick = () => { ui.holeOverviewOpen = false; render(); };
   modal.appendChild(close);
 
-  const prevBtn = el("button", "hole-nav-btn prev");
-  prevBtn.setAttribute("aria-label", "Föregående hål");
-  prevBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
-  prevBtn.disabled = state.currentHole <= 0;
-  prevBtn.onclick = e => { e.stopPropagation(); if (state.currentHole > 0) { state.currentHole--; saveState(); render(); } };
-  modal.appendChild(prevBtn);
-
-  const nextBtn = el("button", "hole-nav-btn next");
-  nextBtn.setAttribute("aria-label", "Nästa hål");
-  nextBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
-  nextBtn.disabled = state.currentHole >= 8;
-  nextBtn.onclick = e => { e.stopPropagation(); if (state.currentHole < 8) { state.currentHole++; saveState(); render(); } };
-  modal.appendChild(nextBtn);
-
   const h = state.currentHole;
   const par = PARS[h];
   const info = HOLE_INFO[h] || {};
@@ -2825,11 +2812,27 @@ function renderHoleOverviewModal() {
   modal.appendChild(header);
 
   const imgWrap = el("div", "hole-overview-image-wrap");
+
+  const prevBtn = el("button", "hole-nav-btn prev");
+  prevBtn.setAttribute("aria-label", "Föregående hål");
+  prevBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>';
+  prevBtn.disabled = state.currentHole <= 0;
+  prevBtn.onclick = e => { e.stopPropagation(); if (state.currentHole > 0) { state.currentHole--; saveState(); render(); } };
+  imgWrap.appendChild(prevBtn);
+
   const img = el("img", "hole-overview-image");
   img.src = "holes/hole-" + (h + 1) + ".webp";
   img.alt = "";
   img.draggable = false;
   imgWrap.appendChild(img);
+
+  const nextBtn = el("button", "hole-nav-btn next");
+  nextBtn.setAttribute("aria-label", "Nästa hål");
+  nextBtn.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+  nextBtn.disabled = state.currentHole >= 8;
+  nextBtn.onclick = e => { e.stopPropagation(); if (state.currentHole < 8) { state.currentHole++; saveState(); render(); } };
+  imgWrap.appendChild(nextBtn);
+
   modal.appendChild(imgWrap);
 
   const facts = el("div", "hole-overview-facts");
