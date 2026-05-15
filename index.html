@@ -2692,6 +2692,29 @@ function el(tag, cls, text) {
   return e;
 }
 
+function attachSwipe(target, onLeft, onRight) {
+  let sx = 0, sy = 0, st = 0, tracking = false;
+  target.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) { tracking = false; return; }
+    const t = e.touches[0];
+    sx = t.clientX; sy = t.clientY; st = Date.now();
+    tracking = true;
+  }, { passive: true });
+  target.addEventListener("touchend", e => {
+    if (!tracking) return;
+    tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - sx;
+    const dy = t.clientY - sy;
+    const dt = Date.now() - st;
+    if (dt > 600) return;
+    if (Math.abs(dx) < 60) return;
+    if (Math.abs(dy) > Math.abs(dx) * 0.8) return;
+    if (dx < 0) onLeft && onLeft();
+    else onRight && onRight();
+  }, { passive: true });
+}
+
 /* ---------- Renderers ---------- */
 function render() {
   applyTheme();
@@ -2726,6 +2749,10 @@ function renderHoleOverviewModal() {
 
   const modal = el("div", "modal");
   modal.onclick = e => e.stopPropagation();
+  attachSwipe(modal,
+    () => { if (state.currentHole < 8) { state.currentHole++; saveState(); render(); } },
+    () => { if (state.currentHole > 0) { state.currentHole--; saveState(); render(); } }
+  );
 
   const close = el("button", "hole-overview-close", "×");
   close.setAttribute("aria-label", "Stäng");
@@ -3259,6 +3286,18 @@ function renderDrawer() {
   if (state.players.length > 0) {
     inner.appendChild(el("div", "drawer-section", "Aktuell runda"));
 
+    const mapItem = el("button", "drawer-item");
+    mapItem.append(
+      iconSpan(svgMap()),
+      el("span", "label", "Översikt över hål " + (state.currentHole + 1))
+    );
+    mapItem.onclick = () => {
+      ui.menuOpen = false;
+      ui.holeOverviewOpen = true;
+      render();
+    };
+    inner.appendChild(mapItem);
+
     const endItem = el("button", "drawer-item");
     endItem.append(
       iconSpan(svgCheck()),
@@ -3292,6 +3331,9 @@ function svgTrash() {
 }
 function svgMenu() {
   return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>';
+}
+function svgMap() {
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3 L3 5 L3 21 L9 19 L15 21 L21 19 L21 3 L15 5 Z"/><line x1="9" y1="3" x2="9" y2="19"/><line x1="15" y1="5" x2="15" y2="21"/></svg>';
 }
 function svgAddToScreen() {
   return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2.5"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="12" y1="9" x2="12" y2="15"/></svg>';
@@ -3622,9 +3664,13 @@ function renderSegmented(label, options, currentValue, onChange) {
 }
 
 function renderHole() {
-  const wrap = el("div");
+  const wrap = el("div", "hole-view");
   const h = state.currentHole;
   const par = PARS[h];
+  attachSwipe(wrap,
+    () => { if (h < 8) setHole(h + 1, true); },
+    () => { if (h > 0) setHole(h - 1, true); }
+  );
 
   const head = el("div", "hole-header");
   head.append(
