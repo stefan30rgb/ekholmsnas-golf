@@ -1942,17 +1942,17 @@ button:disabled { cursor: not-allowed; }
 
 const APP_VERSION = "1.0.0";
 const PARS = [3, 3, 4, 4, 3, 3, 3, 3, 3];
-// Hål-metadata (meters, index). Lämna meters: null tills du fyller in.
+// Hål-metadata (m från herr-tee / dam-tee, stroke index för 18-hålsrundan).
 const HOLE_INFO = [
-  { meters: null, index: null }, // 1
-  { meters: null, index: null }, // 2
-  { meters: null, index: null }, // 3
-  { meters: null, index: null }, // 4
-  { meters: null, index: null }, // 5
-  { meters: null, index: null }, // 6
-  { meters: null, index: null }, // 7
-  { meters: null, index: null }, // 8
-  { meters: null, index: null }, // 9
+  { herr: 151, dam: 133, index: "3/4" },   // 1
+  { herr: 147, dam: 125, index: "9/10" },  // 2
+  { herr: 223, dam: 194, index: "17/18" }, // 3
+  { herr: 210, dam: 177, index: "13/14" }, // 4
+  { herr: 91,  dam: 86,  index: "15/16" }, // 5
+  { herr: 93,  dam: 87,  index: "5/6" },   // 6
+  { herr: 68,  dam: 68,  index: "11/12" }, // 7
+  { herr: 132, dam: 123, index: "7/8" },   // 8
+  { herr: 127, dam: 120, index: "1/2" },   // 9
 ];
 const COURSE_NAME = "Ekholmsnäs";
 const DEFAULT_PLAYERS = ["Oskar", "Stefan", "Philip", "Thea"];
@@ -2851,17 +2851,23 @@ function renderHoleOverviewModal() {
   f2.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(par) }));
   facts.appendChild(f2);
 
-  if (info.meters != null) {
-    const f3 = el("div", "fact-card");
-    f3.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Längd" }));
-    f3.appendChild(Object.assign(el("div", "fact-value"), { textContent: info.meters + " m" }));
-    facts.appendChild(f3);
+  if (info.herr != null) {
+    const fh = el("div", "fact-card");
+    fh.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Tee herr" }));
+    fh.appendChild(Object.assign(el("div", "fact-value"), { textContent: info.herr + " m" }));
+    facts.appendChild(fh);
+  }
+  if (info.dam != null) {
+    const fd = el("div", "fact-card");
+    fd.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Tee dam" }));
+    fd.appendChild(Object.assign(el("div", "fact-value"), { textContent: info.dam + " m" }));
+    facts.appendChild(fd);
   }
   if (info.index != null) {
-    const f4 = el("div", "fact-card");
-    f4.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Index" }));
-    f4.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(info.index) }));
-    facts.appendChild(f4);
+    const fi = el("div", "fact-card");
+    fi.appendChild(Object.assign(el("div", "fact-label"), { textContent: "Index" }));
+    fi.appendChild(Object.assign(el("div", "fact-value"), { textContent: String(info.index) }));
+    facts.appendChild(fi);
   }
 
   modal.appendChild(facts);
