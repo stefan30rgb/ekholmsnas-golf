@@ -3632,8 +3632,7 @@ function renderHole() {
     el("div", "hole-number", String(h + 1)),
     el("div", "hole-par", "Par " + par)
   );
-  const holeMapBtn = el("button", "hole-overview-btn");
-  holeMapBtn.innerHTML = '<span class="emoji">🗺️</span><span>Översikt</span>';
+  const holeMapBtn = el("button", "hole-overview-btn", "Översikt");
   holeMapBtn.onclick = () => { ui.holeOverviewOpen = true; render(); };
   head.appendChild(holeMapBtn);
   wrap.appendChild(head);
